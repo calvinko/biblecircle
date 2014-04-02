@@ -1,13 +1,53 @@
 <?php
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/* 
+ * The MIT License
+ *
+ * Copyright 2014 Calvin Ko.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  */
 
+
 $durl = "http://www.biblecircle.org";
+
+if (filter_has_var(INPUT_GET, 'tab')) {
+    $tab = filter_input(INPUT_GET, 'tab', FILTER_SANITIZE_STRING);
+} else {
+    $tab = 'login';
+};
+
+if ( isset($_GET['dpage'])) {
+    $dpage = $_GET['dpage'];
+}
+ if ( isset($_POST['dpage'])) {
+    $dpage = $_POST['dpage'];
+ }
+ 
+ if ($dpage == "songmgmt") {
+     $durl = "/BibleApp/songmgmt.php";
+ } elseif ($dpage == "shoe") {
+     $durl = "shoedrive.php";
+ }
+
 ?>
 
+<!DOCTYPE html>
 <html>
     <head>
 
@@ -19,13 +59,14 @@ $durl = "http://www.biblecircle.org";
         <!-- Latest compiled and minified CSS -->
 
         <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+        <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
 
         <!-- Latest compiled and minified JavaScript -->
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" ></script>
         <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
 
         <style>
-            .overlay{
+            .overlay {
                 position: absolute;
                 top: 0;
                 left: 0;
@@ -33,6 +74,12 @@ $durl = "http://www.biblecircle.org";
                 height: 100%;
                 z-index: 10;
                 background-color: rgba(0,0,0,0.5); /*dim the background*/
+            }
+            
+            .btn-google {
+                background-color: #dd4b39; 
+                color: #fff;
+                box-shadow: 0 1px 0 rgba(0,0,0,0.10);
             }
             
         </style>
@@ -54,6 +101,7 @@ $durl = "http://www.biblecircle.org";
                       cookie     : true, // enable cookies to allow the server to access the session
                       xfbml      : true  // parse XFBML
               });
+              $("btn-fblogin").removeClass("disabled");
           };
 
           // Load the SDK Asynchronously
@@ -67,27 +115,38 @@ $durl = "http://www.biblecircle.org";
         </script>
         <script>
         
+        
+        
         $(function() {
             
             $("#btn-login").click(function(e) {
-                e.preventDefault();
-                $.post("bcsignin.php", 
-                        {   username:   $("#login-username").val(), 
-                            passwd:     $("#login-password").val(), 
-                            remember:   $("#login-remember").is(':checked') ? 1 : 0
-                        }, 
-                        function(retdata) {
-                            var retobj = $.parseJSON(retdata);
-                            alert(retdata);
-                            if (retobj.status === 1)
-                                window.location = "<?php echo $durl ?>";
-                            else {
-                                $('#login-alert').text(retobj.errormsg);
-                                $('#login-alert').show();
+                
+                var username = $("#login-username").val();
+                if (username == "") {
+                    $('#login-alert').text("Invalid Username");
+                    $('#login-alert').show();
+                } else {
+                    $("#login-overlay").removeClass("hide");
+                    $.post("bcsignin.php", 
+                            {   username:   $("#login-username").val(), 
+                                passwd:     $("#login-password").val(), 
+                                remember:   $("#login-remember").is(':checked') ? 1 : 0
+                            }, 
+                            function(retdata) {
+                                var retobj = $.parseJSON(retdata);
+                                console.log(retdata);
+                                if (retobj.status === 1)
+                                    window.location = "<?php echo $durl ?>";
+                                else {
+                                    $("#login-overlay").addClass("hide");
+                                    $('#login-alert').text(retobj.errormsg);
+                                    $('#login-alert').show();
 
-                            } 
-                        }
-                 )
+                                } 
+                            }
+                     )
+                }
+                 return false;
             })
             
             $("#btn-fblogin").click(function (e) {
@@ -98,16 +157,21 @@ $durl = "http://www.biblecircle.org";
                         fbuid = response.authResponse.userID;
                         $.post("fbsignin.php", {fbuid: fbuid}, function(retdata) {
                             //alert(retdata);
-                            window.location = "http://www.biblecircle.org";
+                            window.location = "<?php echo $durl ?>";
                         })
                     } else {
                         FB.login(function(response) {
                             if (response.authResponse) {
                                 fbuid = response.authResponse.userID;
-                                $.post("fbsignin.php", {fbuid: fbuid}, function(retdata) {
-                                    //alert(retdata);
-                                    window.location = "http://www.biblecircle.org";
-                                })
+                                $.post("fbsignin.php", 
+                                    {   fbuid: fbuid,
+                                        remember:   $("#login-remember").is(':checked') ? 1 : 0
+                                    }, 
+                                    function(retdata) {
+                                        //alert(retdata);
+                                        window.location = "http://www.biblecircle.org";
+                                    }
+                               )
                             } else {
                                 $("#login-overlay").addClass("hide");
                                 $("#login-alert").html("<p>Facebook login canceled</p>");
@@ -117,42 +181,127 @@ $durl = "http://www.biblecircle.org";
                     }
                 });
             })     
+            
+            $("#btn-signup").click(function (e) {
+                    
+                    var errorul = $("<ul></ul>");
+                    if ($("#signupform input[name='email'").val() === "") {
+                        errorul.append("<li>Empty email address</li>") 
+                    };
+                    if ($("#signupform input[name='passwd'").val() === "") {
+                        errorul.append("<li>Empty password</li>"); 
+                    } else if ($("#signupform input[name='passwd'").val() !== $("#signupform input[name='passwd1'").val()) {
+                        errorul.append("<li>Password not match</li>") ;
+                    };
+                    if (errorul.find("li").length !== 0) {
+                        $("#signupalert span").html(errorul)
+                        $("#signupalert").show();
+                    } else {
+                        //$('#btn-signup, #btn-fbsignup').attr("disabled", "disabled");
+                        //$(this).find("i").addClass("icon-spinner");
+                        var params = $("#signupform").serialize();
+                        $("#login-overlay").removeClass("hide");
+                        $.post("bcsignup.php", params, function(retdata) {
+                            var retobj = $.parseJSON(retdata);
+                            console.log(retdata)
+                            if (retobj.status === 1) {
+                                $("#login-overlay").addClass("hide");
+                                $("#signupbox").hide();
+                                $("#signupalert").hide();
+                                //$("#welcomebox div.panel-body").append("<p>userid: " + retobj.userid + "</p>");
+                                //$("#welcomebox div.panel-body").append(retobj.sql)
+                                //$("#welcomebox span.actcode").append(retobj.actcode);
+                                $("#welcomebox").show();
+                            } else if (retobj.status === 2) {
+                                $("#login-overlay").addClass("hide");
+                                $("#signupbox").hide();
+                                $("#signupalert").hide();
+                                $("#welcomebox-2").show(); 
+                            } else {
+                                $("#login-overlay").addClass("hide");
+                                errorul.empty();
+                                errorul.append(retobj.errormsg); 
+                                $("#signupalert span").html(errorul)
+                                $("#signupalert").show();
+                                
+                            }                            
+                        })
+                    }
+                    
+                })
+            
         });
         
+        var gcsigningin = 0;
         function signinCallback(authResult) {
-          if (authResult['status']['signed_in']) {
-            // Update the app to reflect a signed in user
-            // Hide the sign-in button now that the user is authorized, for example:
-            //document.getElementById('signinButton').setAttribute('style', 'display: none');
-            alert(authResult);
-            //$.get("https://www.googleapis.com/plus/v1/people/", {});
-          } else {
-            // Update the app to reflect a signed out user
-            // Possible error values:
-            //   "user_signed_out" - User is signed-out
-            //   "access_denied" - User denied access to your app
-            //   "immediate_failed" - Could not automatically log in the user
-            console.log('Sign-in state: ' + authResult['error']);
-          }
+          
+            if (authResult['code']) {
+                // Hide the sign-in button now that the user is authorized, for example:
+                // $('#signinButton').attr('style', 'display: none');
+                //alert("Send code to server " + authResult['code']);
+                // Send the code to the server
+                if (gcsigningin === 0) {
+                    $("#login-overlay").removeClass("hide");
+                    gcsigningin = 1;    
+                    $.post("gcsignin.php", {code: authResult['code']}, function(retdata) {
+                        window.location = "<?php echo $durl ?>";
+                        gcsigningin = 0;
+                    });
+                }
+
+            } else if (authResult['error']) {
+                // There was an error.
+                // Possible error codes:
+                //   "access_denied" - User denied access to your app
+                //   "immediate_failed" - Could not automatially log in the user
+                // console.log('There was an error: ' + authResult['error']);
+                $("#login-overlay").addClass("hide");
+                $("#login-alert").html("<p>Cannot login using google</p>");
+                $("#login-alert").show();
+            }
+            return false;
         }
+        
     
     </script>
         <div class="container">
 
             <div class="row">
-                <div id="loginbox" style="margin-top:50px; width: 400px" class="container mainbox">                    
+                <div id="welcomebox" style="display:none; margin-top:50px" class="mainbox col-md-offset-2 col-md-8">
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <div class="panel-title">Bible Circle</div>
+                        </div>
+                        <div class="panel-body">
+                            <p>Thank you for signing up with Bible Circle. You will receive an email to activate your account.</p>
+                            <span class="actcode"></span>
+                        </div>
+                    </div>
+                </div>
+                <div id="welcomebox-2" style="display:none; margin-top:50px" class="mainbox col-md-offset-2 col-md-8">
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <div class="panel-title">Bible Circle</div>
+                        </div>
+                        <div class="panel-body">
+                            <p>You have successfully sign up for biblecircle.org</p>
+                            <a href='http://biblecircle.org/signin.php'>login here</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="loginbox" style="margin-top:75px; width: 416px; <?php if ($tab != 'login') { echo 'display:none'; }?>" class="container mainbox">                    
                     <div class="panel panel-info" >
                         <div class="panel-heading">
                             <div class="panel-title">Bible Circle Sign In</div>
                             <div style="float:right; font-size: 80%; position: relative; top:-10px"><a href="#">Forgot password?</a></div>
                         </div>     
 
-                        <div style="padding-top:30px; padding-left: 15px; padding-right: 15px" class="panel-body" >
+                        <div style="padding: 30px 5px 10px 5px" class="panel-body" >
 
                             <div style="display:none" id="login-alert" class="alert alert-danger col-sm-12"></div>
 
                             <form id="loginform" class="col-sm-12" role="form">
-
                                 <div class="form-group">
 
                                     <div class="col-sm-12 input-group">
@@ -160,19 +309,18 @@ $durl = "http://www.biblecircle.org";
                                         <input id="login-username" type="text" class="form-control" name="username" value="">
                                     </div>
                                 </div>
-                                <div class="form-group">
 
+                                <div class="form-group">
                                     <div class="input-group">
                                         <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
                                         <input id="login-password" type="password" class="form-control" name="password" placeholder="password">
                                     </div>
                                 </div>    
-
                                
                                 <div style="margin-top: 30px" class="form-group">
                                     <!-- Button -->
                                     <div class="controls">
-                                        <a id="btn-login" href="#" style="width: 80px" class="btn btn-sm btn-info">Login  </a>
+                                        <a id="btn-login" href="#" style="width: 150px" class="btn btn-sm btn-info">Login  </a>
                                         <a id="btn-cancel" href="#" style="width: 80px" class="hide btn btn-sm btn-warning">Cancel </a>
                                         <span style="padding-left: 10px; padding-top:10px">
                                            
@@ -193,40 +341,33 @@ $durl = "http://www.biblecircle.org";
                                             <span style="margin-left: 30px">- OR -</span>
                                     </div>
                                 </div>
-                                
+                
                                 <div style="form-group">
                                     
-                                   <div style="border-top: 1px solid#888; padding-top:15px; font-size:85%" >
-                                    
-                                    <span style="z-index: 10" id="signinButton">
-                                      <span
-                                        class="g-signin"
-                                        data-callback="signinCallback"
-                                        data-clientid="437968404257-pqvsr2f5j71v4u6ptho0tc3s7vtl3qo8.apps.googleusercontent.com"
-                                        data-cookiepolicy="single_host_origin"
-                                        data-requestvisibleactions=""
-                                        data-scope="profile"
-                                        data-width="wide">
-                                      </span>
-                                    </span>
-                            
-                                   <button  id="btn-fblogin" style="padding: 0px 10px 0px 10px; margin-top: 15px" class="btn btn-sm btn-primary">
-                                        <span style="display: table-cell; font-size: 18px; padding: 0px 13px 0px 4px;float: left;border-right: 1px solid #177;">f</span>
-                                        <span style="display: table-cell; font-size: 12px; padding: 5px 5px 5px 12px;">Sign in with Facebook</span>
-                                   </button>
+                                   <div style="border-top: 1px solid#888; padding-top:15px; font-size:85%" >   
+                                       <div style="float: left">
+                                       <button  id="btn-fblogin" style="padding: 0px 5px" class="btn btn-sm btn-primary">
+                                           <span style="display: table-cell; padding: 9px 10px 8px 6px; border-right: 1px solid #177;"><i class="fa fa-facebook fa-lg"></i></span>
+                                            <span style="display: table-cell; font-size: 12px; width:124px; padding: 5px 2px 5px 4px;">Sign in with Facebook</span>
+                                       </button>
+                                       </div>
+                                       <div style="float: right">
+                                       <button  id="btn-gclogin" style="margin-left: 8px; padding: 0px 5px" class="btn btn-sm btn-danger disabled btn-google">
+                                           <span style="display: table-cell; padding: 9px 7px 8px 3px;border-right: 1px solid #a43;"><i class="fa fa-google-plus fa-lg"></i></span>
+                                            <span style="display: table-cell; font-size: 12px; width:124px; padding: 5px 1px 5px 4px;">Sign in with Google</span>
+                                       </button>
+                                       </div>        
+                                    </div>
                                 </div>
-
-                                
-                                </form>     
-                            </div>                     
-                        </div>  
-                    </div>
-                    
-                    
-                </div>
+                            </form>     
+                            
+                            
+                         </div>                     
+                    </div>  
+                </div>  
+           </div>
                 
-               
-                <div id="signupbox" style="display:none; margin-top:50px" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+                <div id="signupbox" style="margin-top:50px; <?php if ($tab != 'signup') { echo 'display:none'; }?>" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
                     <div class="panel panel-info">
                         <div class="panel-heading">
                             <div class="panel-title">Bible Circle Sign Up</div>
@@ -271,9 +412,16 @@ $durl = "http://www.biblecircle.org";
                                 </div>
 
                                 <div class="form-group">
+                                    <label for="password2" class="col-md-3 control-label">Verify</label>
+                                    <div class="col-md-9">
+                                        <input type="password" class="form-control" name="passwd1" placeholder="Re-enter Password">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
                                     <label for="icode" class="col-md-3 control-label">Invitation Code</label>
                                     <div class="col-md-9">
-                                        <input type="text" class="form-control" name="icode" placeholder="">
+                                        <input type="text" class="form-control" name="icode" placeholder="Invitation Code">
                                     </div>
                                 </div>
 
@@ -292,26 +440,50 @@ $durl = "http://www.biblecircle.org";
                 </div>
 
 
-            </div>
-        </div> 
-        
-        <div id="login-overlay" style="text-align: center" class="hide overlay">
-            
-            <div style="display:inline-block; margin: 220px auto">
-                <img src="images/ajax-loader.gif" height="80px">
-                <br/>
-                <span style="margin-top: 30px; font-size: 20px; color: black">Logging in</span>
-            </div>
-            
-            
         </div>
+        
+        <div id="login-overlay" style="text-align: center" class="hide overlay">    
+            <div style="display:inline-block; margin: 220px auto">
+                <div style="display: none; margin-bottom: 31px; background-color: #eee; padding: 10px 60px; border-radius: 5px;  font-size: 16px; color: black;">Signing  in</div>
+                <img src="images/loading-b1.gif" height="50">
+                <br/>
+                
+            </div>
+        </div>
+    
     <!-- Place this asynchronous JavaScript just before your </body> tag -->
     <script type="text/javascript">
         (function() {
             var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
-            po.src = 'https://apis.google.com/js/client:plusone.js';
+            po.src = 'https://apis.google.com/js/client:plusone.js?onload=render';
             var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
         })();
+        
+        
+
+   /* Executed when the APIs finish loading */
+         function render() {
+
+           // Additional params including the callback, the rest of the params will
+           // come from the page-level configuration.
+           var additionalParams = {
+             'callback': signinCallback,
+             'clientid': "437968404257-pqvsr2f5j71v4u6ptho0tc3s7vtl3qo8.apps.googleusercontent.com",
+             'cookiepolicy': "single_host_origin",
+             'requestvisibleactions' : "",
+             'accesstype': "offline",
+             'scope': "https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/plus.me https://www.googleapis.com/auth/userinfo.email"
+           };
+
+           $("#btn-gclogin").removeClass("disabled");
+           // Attach a click listener to a button to trigger the flow.
+           $("#btn-gclogin").click(function(e) {
+                gapi.auth.signIn(additionalParams);
+                e.preventDefault();
+                
+           });
+           
+         }
      
         (function(d){
              var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
@@ -320,6 +492,8 @@ $durl = "http://www.biblecircle.org";
              js.src = "//connect.facebook.net/en_US/all.js";
              ref.parentNode.insertBefore(js, ref);
         }(document));
+        
+        
      
     </script>    
     </body>

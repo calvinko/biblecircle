@@ -10,6 +10,6 @@ include "authutil.php";
 
 Authenticate::logOut();
 
-header("location: http://www.biblecircle.org");
+header("location: http://www.biblecircle.org/signin.php");
 
 

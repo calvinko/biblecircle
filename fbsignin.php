@@ -12,15 +12,20 @@ require_once ("authutil.php");
 require_once ("bcutil.php");
 
 $config = array();
-$config['appId'] = '72255585723';
-$config['secret'] = '91bb265d7aa60af7f03a3f42a58a4f96';
+$config['appId'] = FB_APPID;
+$config['secret'] = FB_SECRET;
 $config['allowSignedRequest'] = false;
 $config['fileUpload'] = false;
 
-$facebook = new Facebook($fbconfig);
+$facebook = new Facebook($config);
 $ret['status'] = 0;
 if ($facebook) {
     if (isset($_POST['fbuid'])) {
+        if ( intval(filter_input(INPUT_POST, "remember")) != 0) {
+            $remember = true;
+        } else {
+            $remember = false;
+        }
         $fbuid = intval($_POST['fbuid']);  
         if ($fbuid == $facebook->getUser()) {
             $userid = getUseridFromFbuid($fbuid);
@@ -29,7 +34,7 @@ if ($facebook) {
             $email = $user_profile['email'];    
             // case 1: fbuid not in the system
             if ($userid != 0) {
-                 setBACookie($userid);
+                 setBACookie($userid, $remember);
                  $ret['status'] = "success";
             } else {
                 $mysqli = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
@@ -43,20 +48,21 @@ if ($facebook) {
                     $result = $mysqli->query($sql);
                     if ($result) {
                         $userid = $mysqli->insert_id;
-                        //setBACookie($userid);
-                        $ret['status'] = "createdaccount";
+                        setBACookie($userid, $remember);
+                        $ret['status'] = "accountcreated";
+                        $ret['email'] = $email;
+                        $ret['firstname'] = $user_profile["first_name"];
+                        $ret['lastname'] = $user_profile["last_name"];
                         
                     }
-                    $ret['firstname'] = $user_profile["first_name"];
-                    $ret['lastname'] = $user_profile["last_name"];
                     
                 } else {
                     $mysqli->query("UPDATE usertbl SET fbuserid=$fbuid where email='$email'");
-                    setBACookie($uid);
+                    setBACookie($uid, $remember);
                     $ret['firstname'] = $user_profile['firstname'];
                     $ret['lastname'] = $user_profile["last_name"];
                     $ret['email'] = $email;
-                    $ret['status'] = "error";
+                    $ret['status'] = "accountlinked";
                 }
             }   
         } else {

@@ -9,15 +9,18 @@
 require_once "authutil.php";
 require_once "bcutil.php";
 
+$ret['errormsg'] = "Invalid username or password";
+$ret['status'] = 0;
+
 if ( isset($_POST['username']) && isset($_POST['passwd'])) {
     $username = $_POST['username'];
     $passwd = $_POST['passwd'];
-    if (isset ($_POST['remember'])) {
-        $remember = intval($_POST['remember']);
-    } else {
-        $remember = 0;
+    if ( intval(filter_input(INPUT_POST, "remember")) != 0) {
+            $remember = true;
+        } else {
+            $remember = false;
     }
-     
+   
     try {
         $auth = new Authenticate($username);
         $auth->authenticate($username, $passwd, $remember);

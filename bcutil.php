@@ -32,6 +32,23 @@ function getUseridFromFbuid($fbuid) {
     return 0;
 }
 
+function getUseridFromGuid($guid) {
+    global $mysqli; 
+    if ($mysqli == null) {
+        $mysqli = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+    }
+    $sql = "SELECT `userid` FROM `usertbl` WHERE `guserid` = '$guid'"; 
+     
+    $result = $mysqli->query($sql);
+    if ($result) {
+        $row = $result->fetch_row();
+        if ($row) {
+            return $row[0];
+        }
+    }
+    return 0;
+}
+
 function getUseridFromUsername($username) {
     global $mysqli; 
     if ($mysqli == null) {
@@ -71,7 +88,7 @@ function getUserProfile($userid) {
     if ($mysqli == null) {
         $mysqli = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
     }
-    $sql = "SELECT `userid`, `username`, `email`, `email2`, `firstname`, `lastname`, `fbuserid`, `guserid`, `twuserid`, `type` FROM `usertbl` WHERE `userid` = $userid"; 
+    $sql = "SELECT `userid`, `username`, `email`, `email2`, `passwd`, `firstname`, `lastname`, `fbuserid`, `guserid`, `twuserid`, `type` FROM `usertbl` WHERE `userid` = $userid"; 
      
     $result = $mysqli->query($sql);
     if ($result) {
@@ -87,7 +104,7 @@ function getUserProfile($userid) {
             return $row;
         }
     }
-    return array();
+    return null;
 }
 
 function getUserPlans($uid)
@@ -235,6 +252,11 @@ function createPlanForUser($userid, $planid, $startdate, $gpid=0)
         }
     }
     return 0;
+}
+
+function isShineManager($userid) 
+{
+    return $userid == 1001;
 }
 
 class BibleUser {

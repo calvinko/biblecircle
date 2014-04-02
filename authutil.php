@@ -8,10 +8,6 @@ define( 'COOKIE_DOMAIN', $cookiedomain );
 define( 'COOKIE_PATH', '/' ); 
 define( 'COOKIE_AUTH', 'auth_biblecircle' ); 
 
-
-
-
-
 function rand_string( $length ) {
 	$chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";	
 
