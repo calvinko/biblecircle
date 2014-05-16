@@ -36,6 +36,12 @@ if ($astatus) {
 } else {
     header("location: http://www.biblecircle.org/signin.php?dpage=shoe");    
 } 
+
+ if ($userid != 0) {
+        $userprofile = getUserProfile($userid);
+        $usertype = $userprofile['type'];
+        $username = $userprofile['username'];
+ }
      
 ?>
 
@@ -204,7 +210,7 @@ if ($astatus) {
                             <li id="nav-user" class="dropdown">
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                             <i class="fa fa-user"></i> 
-                                            <span></span>
+                                            <span><?php echo $username; ?></span>
                                             <b class="caret"></b>
                                     </a>
 

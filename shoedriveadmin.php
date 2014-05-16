@@ -43,6 +43,40 @@ if (!ismanager) {
     header("location: http://www.biblecircle.org/shoedrive.php");   
 }
 
+initmysqli();
+
+function getgoal($userid) {
+    global $mysqli;
+    $sql = "SELECT * from miscuserdata WHERE userid=$userid and fieldname='shoegoal2014'";
+    $result = $mysqli->query($sql);
+    if ($result) {
+        $row = $result->fetch_assoc();
+        if ($row) {
+            return $row['fieldvalue'];
+        } else {
+            return "";
+        }
+    }
+}
+
+//SELECT * FROM usertbl join `miscuserdata` on usertbl.userid=miscuserdata.userid WHERE 1
+//SELECT * FROM `shoedonationlog` WHERE MONTH(ddate) = 3
+function getuserlist() {
+    global $mysqli;
+    $ret = array();
+    $result = $mysqli->query("SELECT userid,username,firstname,lastname from usertbl where type='user' and ugroup=17");
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $row['shoegoal'] = getgoal($row['userid']);
+            $ret[] = $row;
+            
+        }
+    }
+    return $ret;
+}
+
+$userinfotbl = getuserList();
+
 ?>
 
 <!DOCTYPE html>
@@ -61,6 +95,7 @@ if (!ismanager) {
     <script src="//code.jquery.com/jquery.js"></script>
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
     <script src="js/bootstrap-datepicker.js"></script>
+    <script src="js/chart.min.js"></script>
     
     
     <style>
@@ -83,6 +118,8 @@ if (!ismanager) {
     </style>
     <script>
         
+        var usertbl = {};
+        var inuserid = 0;
         var crecid = '0';
         function fillvalue(elm, nameattr, value) {
             var e = elm.find("input[name='" + nameattr + "']");
@@ -96,27 +133,45 @@ if (!ismanager) {
         {
             $("#loading-overlay").removeClass("hide");
             
-            $.getJSON("shoedrivelog.php", {op: "fetch"},  function(retobj) {
+            $.getJSON("shoedrivelog.php", {op: "getlog"},  function(retobj) {
                  $("#input-goal").val(retobj.goal);
                  $("#shoeform span.sd-status").text(retobj.total);
+                 var userlist = retobj.userlist;
+                 $("#ig-userid ul.dropdown-menu").empty();
+                 $.each(userlist, function(index, userrec) {
+                     usertbl[userrec.userid] = userrec;
+                     var ln = $("<li><a href='#'>" + userrec.username + "</a></li>");
+                     ln.click(function () {
+                         $("#ig-userid input").val(userrec.username);
+                         inuserid = userrec.userid;
+                     })
+                     $("#ig-userid ul.dropdown-menu").append(ln);
+                 });
                  var rows = retobj.data;
                  $("#loading-overlay").addClass("hide");
                  $("#shoedrivelogtable tbody").empty();
                  $.each(rows, function(index, row) {
                      var tr = $("<tr></tr>");
+                     tr.append("<td>" + row.userid + ":" + usertbl[row.userid].username + "</td>");
                      tr.append("<td>" + row.ddate + "</td>");
                      tr.append("<td>" + row.number + "</td>");
-                     var ebut = $("<button style='margin-right:5px' class='btn btn-primary btn-sm'><i class='glyphicon glyphicon-pencil'></i> Change</button>");
+                     //var ebut = $("<button style='margin-right:5px' class='btn btn-primary btn-sm'><i class='glyphicon glyphicon-pencil'></i> Change</button>");
                      var dbut = $("<button class='btn btn-default btn-sm'><i class='glyphicon glyphicon-trash'></i> Delete</button>");
                      dbut.click(function() {
                          crecid = row.recid;
                          $("#delete-log-modal").modal('show');
                     })
-                     tr.append($("<td></td>").append(ebut).append(dbut));
+                     tr.append($("<td></td>").append(dbut));
                      $("#shoedrivelogtable tbody").append(tr);
                  })
             })
         }
+        
+        
+        
+        
+        
+    /*************************************************************************/
         
         $(function() {
             
@@ -160,11 +215,42 @@ if (!ismanager) {
                 var dt = $("#input-date").val();
                 var n = $("#input-number").val();
                 if (n !== "Select") {
-                    $.getJSON("shoedrivelog.php", {op: "insert", date: dt, number: n}, function(retobj) {
+                    $.getJSON("shoedrivelog.php", {op: "insert", inuserid: inuserid, date: dt, number: n}, function(retobj) {
                         refreshShoeDriveData();
                     });
                 }
             });
+            
+            var options = {animation : false};
+
+            //Get the context of the canvas element we want to select
+            var c = $('#daily-chart');
+            //var ct = c.get(0).getContext('2d');
+            var ctx = document.getElementById("mychart").getContext("2d");
+
+            var data = {
+                labels: ["April", "May", "June", "July", "August", "Sep", "Oct", "Nov", "Dec"],
+                datasets: [{
+                    fillColor: "rgba(151,187,205,0.5)",
+                    strokeColor: "rgba(151,187,205,1)",
+                    data: [68, 48, 40, 59, 0, 0, 0, 0, 0]
+                }]
+            }
+            function respondCanvas() {
+                c.attr('width', jQuery("#daily").width());
+                c.attr('height', jQuery("#daily").height());
+            //Call a function to redraw other content (texts, images etc)
+                myNewChart = new Chart(ctx).Bar(data, options);
+            }
+
+
+    
+
+            //Run function when window resizes
+            $(window).resize(respondCanvas);
+    
+            //Initial call 
+            respondCanvas();
         });
     </script>
 </head>
@@ -257,7 +343,15 @@ if (!ismanager) {
                     </div>     
                     <div class="panel-body">
                         <div class="tab-content">
+                            
+                            
                             <div id="ptab1" style="height:400px;" class="tab-pane active tab-box" >
+                                <div class="row">
+                                    <div id="daily" style="height: 200px" class="col-md-10">
+                                        <canvas id="mychart" width="500" height="150"></canvas>
+                                    </div>
+                                
+                                </div>
                                 <form id="shoeform" class="col-md-12" role="form">
                                     <div class="row form-group">
                                         <label for="goal" style="line-height: 28px"  class="col-md-3 control-label">Goal (# pairs of shoes)</label>
@@ -277,15 +371,49 @@ if (!ismanager) {
                                               </div>
                                               
                                     </div>
+                                    
                                    
                                 </form>
+                                
+                                <div style="" class="col-md-10">
+                                    <table id="usertable" class="table">
+                                        <thead>
+                                            <tr><th>Name</th><th>Goal</th><th>Current</th></tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php
+                                                foreach($userinfotbl as $rec) {
+                                                    echo "\t\t\t <tr><td>";
+                                                    echo $rec['firstname'] . " " . $rec['lastname'];
+                                                    echo "</td><td>";
+                                                    echo $rec['shoegoal'];
+                                                    echo "</td><td>";
+                                                    echo "</td></tr>\n";
+                                                }
+                                            ?>
+                                        </tbody>
+                                    </table>
+                                    
+                                </div>
                             </div>
                             <div id="ptab2" style="height:600px;" class="tab-pane tab-box" >
                                 <div style="margin: 5px 3px;" class="row">
                                     <table id="shoedrivelogtable" class="table col-md-10">
                                         <thead>
-                                            <tr><th class="col-md-4">Date</th><th class="col-md-4">No. of Pair Submitted</th><th>Operation</th></tr>
+                                            <tr><th class="col-md-3">User ID</th><th class="col-md-3">Date</th><th class="col-md-3">No. of Pair Submitted</th><th>Operation</th></tr>
                                             <tr>
+                                                <td>
+                                                    <div id="ig-userid" class="input-group">
+                                                        <input id="input-userid" class="form-control" size="6" type="text">
+                                                        <span class="input-group-addon dropdown-toggle" data-toggle="dropdown"><b class="caret"></b></span>
+                                                        <ul class="dropdown-menu">
+                                                            <li><a href="#">Loading</a></li>
+                                                            <li class="divider"></li>
+                                                            <li><a href="#">Calvin Ko</a></li>
+                                                        </ul>
+                                                    </div>
+                                                </td>
+                                                
                                             <td>
                                                  <div class="input-group date" data-date="<?php echo $todaystr; ?>" data-date-format="yyyy-mm-dd">
                                                       <input id='input-date' class="form-control" size="10" type="text" value="<?php echo $todaystr; ?>">

@@ -51,6 +51,7 @@
     $userid = getUseridFromGuid($guid);
     if ($userid != 0) {
          setBACookie($userid, $remember);
+         $ret['email'] = $email;
          $ret['status'] = "success";
     } else {
         
@@ -66,7 +67,7 @@
             $ret['status'] = "accountlinked";
             $ret['guid'] = $guid;
         } else {
-            $sql = "INSERT into usertbl set created='$tstamp', username='$email', email='$email', passwd='none', guserid=$guid";
+            $sql = "INSERT into usertbl set created='$tstamp', username='$email', email='$email', passwd='none', guserid=$guid, type='user'";
             $result = $mysqli->query($sql);
             if ($result) {
                 $userid = $mysqli->insert_id;

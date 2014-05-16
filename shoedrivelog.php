@@ -45,7 +45,7 @@ function getgoal($userid) {
 
 function gettotal() {
     global $mysqli;
-    $sql = "SELECT SUM(number) from shoedonationlog WHERE dlag=0 and ugroup='Oakland'";
+    $sql = "SELECT SUM(number) from shoedonationlog WHERE dflag=0 and ugroup='Oakland'";
     $result = $mysqli->query($sql);
     if ($result) {
         $row = $result->fetch_row();
@@ -55,6 +55,19 @@ function gettotal() {
     }
 }
 
+function getuserlist() {
+    global $mysqli;
+    $ret = array();
+    $result = $mysqli->query("SELECT userid,username,firstname,lastname from usertbl where type='user'");
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $ret[] = $row;
+        }
+    }
+    return $ret;
+}
+
+$SHOEGOAL2014 = "500";
 $ret['_status'] = 0;
 
 $astatus = Authenticate::validateAuthCookie();
@@ -74,6 +87,8 @@ if ($userid != 0) {
         } else {
             $cond = "dflag = 0";
         }
+        $ret['goal'] = $SHOEGOAL2014;
+        $ret['userlist'] = getuserlist();
         $result = $mysqli->query("SELECT * from shoedonationlog WHERE $cond");
         if ($result) {
             $total = 0;
@@ -115,10 +130,15 @@ if ($userid != 0) {
             $ret['_errormsg'] = $mysqli->error;
         }
     } elseif ($op == "insert") {
+        if (filter_has_var(INPUT_GET, "inuserid")) {
+            $inuserid = filter_input(INPUT_GET, "inuserid", FILTER_SANITIZE_NUMBER_INT);
+        } else {
+            $inuserid = $userid;
+        }
         if (filter_has_var(INPUT_GET, "date") and filter_has_var(INPUT_GET, "number")) {
             $date = filter_input(INPUT_GET, "date", FILTER_DEFAULT);
             $num = filter_input(INPUT_GET, "number", FILTER_SANITIZE_NUMBER_INT);
-            $result = $mysqli->query("INSERT INTO shoedonationlog (userid,number,ddate) VALUES($userid, $num, '$date') ");
+            $result = $mysqli->query("INSERT INTO shoedonationlog (userid,number,ddate) VALUES($inuserid, $num, '$date') ");
             if ($result) {
                 $ret['ddate'] = $date;
                  $ret['_status'] = 1;

@@ -119,6 +119,17 @@ if ( isset($_GET['dpage'])) {
         
         $(function() {
             
+            
+            $('#login-passwd').keypress(function(e) {
+                if (e.which === '13') {
+                    //submitLogin();
+                    alert("return");
+                }
+                alert("press ret");
+                e.preventDefault();
+                return false;
+            });
+            
             $("#btn-login").click(function(e) {
                 
                 var username = $("#login-username").val();
@@ -150,14 +161,26 @@ if ( isset($_GET['dpage'])) {
             })
             
             $("#btn-fblogin").click(function (e) {
+               
                 $("#login-overlay").removeClass("hide");
                 e.preventDefault();
+                
+               
+                  
                 FB.getLoginStatus(function(response) {
                     if (response.status === 'connected') {
                         fbuid = response.authResponse.userID;
                         $.post("fbsignin.php", {fbuid: fbuid}, function(retdata) {
-                            //alert(retdata);
-                            window.location = "<?php echo $durl ?>";
+                            var retobj = $.parseJSON(retdata);
+                            console.log(retdata)
+                            if (retobj.status === "failure") {
+                                $("#login-overlay").addClass("hide");
+                                $("#login-alert").html("<p>Facebook login failure</p>");
+                                $("#login-alert").show();
+                            } else {
+                                window.location = "http://www.biblecircle.org";
+                            } 
+                            
                         })
                     } else {
                         FB.login(function(response) {
@@ -168,8 +191,15 @@ if ( isset($_GET['dpage'])) {
                                         remember:   $("#login-remember").is(':checked') ? 1 : 0
                                     }, 
                                     function(retdata) {
-                                        //alert(retdata);
-                                        window.location = "http://www.biblecircle.org";
+                                         var retobj = $.parseJSON(retdata);
+                                        console.log(retdata)
+                                        if (retobj.status === "failure") {
+                                            $("#login-overlay").addClass("hide");
+                                            $("#login-alert").html("<p>Facebook login failure</p>");
+                                            $("#login-alert").show();
+                                        } else {
+                                            window.location = "http://www.biblecircle.org";
+                                        }
                                     }
                                )
                             } else {
@@ -177,7 +207,7 @@ if ( isset($_GET['dpage'])) {
                                 $("#login-alert").html("<p>Facebook login canceled</p>");
                                 $("#login-alert").show();
                             }
-                        });
+                        }, {scope: 'email'});
                     }
                 });
             })     
@@ -244,10 +274,24 @@ if ( isset($_GET['dpage'])) {
                     $("#login-overlay").removeClass("hide");
                     gcsigningin = 1;    
                     $.post("gcsignin.php", {code: authResult['code']}, function(retdata) {
-                        window.location = "<?php echo $durl ?>";
+                        var retobj = $.parseJSON(retdata);
+                        $("#login-overlay").addClass("hide");
+                        if (retobj.status === "accountcreated") {
+                            $("#setup-modal p.emailaddr").text(retobj.email);
+                            $("#setup-modal .btn-continue").click(function() {
+                                var first = $("#setup-modal input[name='firstname']").val();
+                                var last = $("#setup-modal input[name='lastname']").val();
+                                $.post("userapi.php", {firstname: first, lastname: last}, function(ret) {
+                                    window.location = "<?php echo $durl ?>";
+                                });
+                            });
+                            $("#setup-modal").modal();
+                        } else {
+                            window.location = "<?php echo $durl ?>";
+                        }
                         gcsigningin = 0;
                     });
-                }
+                };
 
             } else if (authResult['error']) {
                 // There was an error.
@@ -285,7 +329,7 @@ if ( isset($_GET['dpage'])) {
                         </div>
                         <div class="panel-body">
                             <p>You have successfully sign up for biblecircle.org</p>
-                            <a href='http://biblecircle.org/signin.php'>login here</a>
+                            <a href='http://biblecircle.org/signin.php<?php if ($dpage =='shoe') echo '?dpage=shoe'; ?>' >login here</a>
                         </div>
                     </div>
                 </div>
@@ -320,7 +364,7 @@ if ( isset($_GET['dpage'])) {
                                 <div style="margin-top: 30px" class="form-group">
                                     <!-- Button -->
                                     <div class="controls">
-                                        <a id="btn-login" href="#" style="width: 150px" class="btn btn-sm btn-info">Login  </a>
+                                        <button id="btn-login" style="width: 150px" class="btn btn-sm btn-info">Login  </button>
                                         <a id="btn-cancel" href="#" style="width: 80px" class="hide btn btn-sm btn-warning">Cancel </a>
                                         <span style="padding-left: 10px; padding-top:10px">
                                            
@@ -450,6 +494,43 @@ if ( isset($_GET['dpage'])) {
                 
             </div>
         </div>
+    
+    <div id="setup-modal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Initial Sign Up</h4>
+              </div>
+              <div class="modal-body">
+                  <p>We notice that it is the first time signing in with <span>Google</span>. Please update you information.</p>
+                    <form id="signupform" class="form-horizontal" role="form">
+                        <div class="form-group">
+                            <label for="email" class="col-md-3 control-label">Email</label>
+                            <div class="col-md-9">
+                                <p class="form-control-static emailaddr">Your email</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="firstname" class="col-md-3 control-label">First Name</label>
+                            <div class="col-md-9">
+                                <input type="text" class="form-control" name="firstname" placeholder="First Name">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastname" class="col-md-3 control-label">Last Name</label>
+                            <div class="col-md-9">
+                                <input type="text" class="form-control" name="lastname" placeholder="Last Name">
+                            </div>
+                        </div>
+                    </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-primary btn-continue">Continue</button>
+              </div>
+            </div><!-- /.modal-content -->
+          </div><!-- /.modal-dialog -->
+    </div>
     
     <!-- Place this asynchronous JavaScript just before your </body> tag -->
     <script type="text/javascript">

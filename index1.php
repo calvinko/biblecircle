@@ -40,6 +40,7 @@
     
     <script src="//code.jquery.com/jquery.js"></script>
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <script src="bibleutil.js"></script>
     <style>
             
         body {
@@ -130,6 +131,7 @@
     <script>
         var userid = <?php echo $userid ?>;
         
+        // Interface to bible text
         function biblestore() {
             this.getChapter = function(version, booknum, chapter) {
                 
@@ -143,6 +145,8 @@
                 } else if (version === "NET") {
                     $.getJSON("http://labs.bible.org/api/?callback=?", {passage: "John 2", type: "json"}, 
                         function(robj) {
+                            
+                            
                             $.each(robj, function(index, rec) {
                                 $("#singleviewpane .textbox").append(rec.text);
                             })
@@ -185,14 +189,14 @@
                 this.version = version;
             },
                                         
-                fetchchapter: function(bk, ch){
-                    if (this.version === "CUV" || this.version === "KJV") {
-                        $.post("getBibleText.php", {version: this.version, book: bk, chapter: ch}, function(data) {   
-                            var ret = $.parseJSON(data);
-                            var rows = ret.rows;
-                        }); 
-                    }
-                },
+            fetchchapter: function(bk, ch){
+                if (this.version === "CUV" || this.version === "KJV") {
+                    $.post("getBibleText.php", {version: this.version, book: bk, chapter: ch}, function(data) {   
+                        var ret = $.parseJSON(data);
+                        var rows = ret.rows;
+                    }); 
+                }
+            },
                 
             displaychaptersv: function(bkname, chapter, rows, status) {  /* 1 chapter, rows - list of verses */
         

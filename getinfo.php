@@ -25,32 +25,8 @@
  */
 
 
-require_once 'config.php';
+echo date(DATE_RFC2822);
+$load = sys_getloadavg();
+print_r($load);
+//phpinfo();
 
-$mysqli = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
-$mysqli->query("SET NAMES 'utf8'");
-
-$route = filter_input(INPUT_GET, "__route__", FILTER_DEFAULT);
-
-if ($route[0] == "/")
-    $route = substr($route, 1);
-        
-$elms = explode("/", $route);
-
-
-
-$result = $mysqli->query("SELECT chapter,verse,text FROM $texttbl WHERE book=$book and chapter>=$lrange and chapter <=$urange ORDER BY chapter, verse");
-if ($result) {
-    while ($row = $result->fetch_assoc()) {
-        $data[] = $row;
-    }
-} else {
-        $data = "Error" . mysql_error();     
-}
-
-$retval['bookname'] = getBookName(intval($book), $version);
-$retval['title'] = $retval['bookname'] . ' ' . $chapter;
-$retval['rows'] = $data;
-echo json_encode($retval);
-
-?>

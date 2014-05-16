@@ -308,5 +308,14 @@ function parsePassagePhrase($passage)
 // /bible/{BOOK}/{chapter}?version=XX 
 // 
 function bibleapi($elm, $vars, $ret)  {
+    global $mysqli;
     
+    $result = $mysqli->query("SELECT chapter,verse,text FROM $texttbl WHERE book=$book and chapter>=$lrange and chapter <=$urange ORDER BY chapter, verse");
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+    } else {
+            $data = "Error" . mysql_error();     
+    }
 } 

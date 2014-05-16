@@ -83,8 +83,8 @@ function rest_userapi($elms, $r) {
 }
 
 if ($base == "user") {
-    echo json_encode(rest_userapi($elms, $ret));
-    exit();
+    //echo json_encode(rest_userapi($elms, $ret));
+    //exit();
 } elseif ($base == "bible") {
     
 } elseif ($base == "page") {
@@ -96,7 +96,7 @@ if ($base == "user") {
     
 }
     
- echo "exception";   
+ echo "mainapi exception";   
  print_r($_GET);
     
  print_r($elms);

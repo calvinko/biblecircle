@@ -185,9 +185,10 @@ class Authenticate {
 
         list( $id, $expiration, $hmac ) = explode( '|', $_COOKIE[COOKIE_AUTH] ); 
 
-        if ( $expiration < time() ) 
+        if ( $expiration < time() ) {
             return false; 
-
+        }
+        
         $key = hash_hmac( 'md5', $id . $expiration, SECRET_KEY ); 
         $hash = hash_hmac( 'md5', $id . $expiration, $key ); 
         

@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<!--
+The MIT License
+
+Copyright 2014 ko.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+-->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bible Circle</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap -->
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css" rel="stylesheet" >
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+    <link href="css/bcstyle.css" rel="stylesheet">
+    
+    <script src="//code.jquery.com/jquery.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <script src="bibleutil.js"></script>
+    <style>
+            
+        body {
+            padding-top: 52px;
+            padding-bottom: 30px;      
+        }      
+
+        .biblepanel-silver {
+            border: 0px silver solid;
+            border-radius: 10px;
+            background: url(/images/darkbluesilver-bg.jpg);
+            
+            padding: 25px 12px 12px 12px;
+            
+            height: 816px;
+        }
+        
+        .panel-bible {
+            height: 740px;
+            
+            background-image: linear-gradient(to bottom, #f8f8f8 0%, #fefefe 100%);
+            background-repeat: repeat-x;
+            border: 1px solid #aaaaaa;
+            
+            bbox-shadow: 0 0 6px 6px #D4AF37;  
+            margin-left: auto;
+            margin-right: auto;
+            padding: 0px;
+        }
+        
+        .panel-body-round {
+            background-color: whitesmoke;
+            opacity: 1.0;
+            border: 0px black solid;
+            border-radius: 8px;
+        }
+        
+        .panel-status {
+            -webkit-border-radius: 3px;
+            border-radius: 3px;
+            -webkit-transition: left .5s cubic-bezier(0.250,0.460,0.450,0.940),width .4s ease,padding .4s ease,box-shadow .4s ease,margin .4s ease,border .4s ease;
+            transition: left .5s cubic-bezier(0.250,0.460,0.450,0.940),width .4s ease,padding .4s ease,box-shadow .4s ease,margin .4s ease,border .4s ease;
+            background-color: #f5f5f5;
+            border: 1px solid #d8d8d8;
+            border-bottom-width: 2px;
+            left: 0;
+            margin: 10px 0 20px 0;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .panel-heading-sm {
+            padding: 5px 10px;
+        }
+        
+        h3, h4, h5 {
+            border: 0 solid #efefef;
+            border-bottom-width: 1px;
+            padding-bottom: 10px;
+        }
+        
+        .box {
+            background-color: #FFFFFF;
+            -moz-border-radius: 1px 1px 1px 1px;
+            -webkit-border-radius: 1px 1px 1px 1px;
+            border-radius: 1px 1px 1px 1px;
+            box-shadow: 0 0 0 1px rgba(0,0,0,0.05);
+        }
+        
+        .widget-head {
+            font-size: 15px;
+            font-weight: bold;
+            line-height: 50px;
+            margin: 0;
+            text-align: center;
+            text-transform: uppercase;
+            box-shadow: 0 1px 0px 0px rgba(0,0,0,0.10);
+            color: #eb7a77;
+        
+        }
+            
+        .widget-head {
+            background: #ffffff;
+        }
+        
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            background-color: rgba(0,0,0,0.5); /*dim the background*/
+        }
+            
+        .btn {
+            padding: 4px 10px;
+        }
+        
+        .booktitle {
+                font-size: 14px;
+                font-weight: bold;
+                line-height: 16px;
+                padding-top: 4px;
+            }
+            
+            ul.submenu {
+                margin: 0 0 10px 10px;
+                width: 160px;
+                float: left;
+                overflow: visible;
+            }
+            
+            .submenu > li {
+                list-style: none;
+            }
+            
+            ul.submenu {
+                padding-left: 15px;
+            }
+            
+            .submenu > li > a {
+              display: block;
+              padding: 3px 10px 3px 15px;
+              clear: both;
+              font-weight: normal;
+              line-height: 20px;
+              color: #333333;
+              white-space: nowrap;
+              
+            }
+
+            .submenu > li:hover
+            
+            {
+                color: #ffffff;
+                background-image: linear-gradient(to bottom,#fff 0,#e6e6e6 100%);
+                    
+            }
+            
+            .submenu > li > a:hover 
+            {
+                text-decoration:none;
+            }
+            
+            .submenu > li span.trig {
+                float: right;
+                padding: 3px 6px 4px 6px;
+                margin: auto;
+                
+            }
+            
+            .submenu > li span.trig:hover {
+                background-image: linear-gradient(to bottom,#fff 0,#e6e6e6 100%);
+                background-repeat: repeat-x;
+            }
+
+            .submenu > li ul.chaptermenu {
+                background-image: linear-gradient(to bottom,#fff 0,#e6e6e6 100%);
+                background-repeat: repeat-x;
+                background-color: lightskyblue;
+                color: black;
+                position: absolute;
+                padding: 2px;
+                width: 168px;
+                max-height: 240px;
+                overflow-y: auto;
+                border: 2px solid grey;
+            }
+            
+            .submenu > li ul.chaptermenu li {
+                list-style: none;
+                display: inline-block;
+                
+                width: 24px;
+                height: 24px;
+                border: 1px solid black;
+                text-align: center;
+            }
+            
+            .submenu > li ul.chaptermenu li:hover {
+                background-color: #777;
+                color: #eee;
+            }
+            
+            .brow li {
+                float: left;
+                width: 30px;
+                height: 30px;
+                line-height: 26px;
+                
+                border: 1px solid #bbb;
+                text-align: center;
+                font-size:14px;
+                font-weight: 0.5;
+                font-family:  'arial', Charcoal, sans-serif;
+                cursor: pointer;
+                color: graytext;
+            }
+    </style>
+    <script type="text/javascript">
+        
+        var userid = 0;
+        // Interface to bible text
+        function biblestore() {
+            this.getChapter = function(version, booknum, chapter) {
+                
+            };
+            
+            this.fetchChapter = function(version, booknum, chapter) {
+                if (version === "CUV" || version === "KJV") {
+                    $.getJSON("bible/" + version + "/", {book: booknum, chapter: chapter}, function() {
+                        
+                    });
+                } else if (version === "NET") {
+                    bname = biblebooklist[booknum][0];
+                    bpassage = bname + ' ' + parseInt(chapter);
+                    $.getJSON("http://labs.bible.org/api/?callback=?", {passage: bpassage, type: "json"}, 
+                        function(robj) {
+                            
+                            
+                            $.each(robj, function(index, rec) {
+                                $("#singleviewpane .textbox").append(rec.text);
+                            });
+                        }
+                    );
+                }
+            };
+            
+            this.fetchChapter1 = function(version, booknum, chapter, displayfunc) {
+                if (version === "CUV" || version === "KJV") {
+                    $.getJSON("bible/" + version + "/", {book: booknum, chapter: chapter}, displayfunc);
+                } else if (version === "NET") {
+                    bname = biblebooklist[booknum][0];
+                    bpassage = bname + ' ' + parseInt(chapter);
+                    $.getJSON("http://labs.bible.org/api/?callback=?", {passage: bpassage, type: "json", formatting: "text"}, displayfunc);
+                }
+            } 
+           
+        };
+        
+        function initLoginUser() {
+            $.getJSON("/user/me", {}, function(retobj) {
+                userid = retobj.userid;
+                if (userid !== 0) {
+                    $("#nav-setting, #nav-user").removeClass("hide");
+                    $("#nav-user span.user").text(retobj.firstname + ' ' + retobj.lastname);
+                } else {
+                    $("#nav-login, #nav-signup").removeClass("hide");
+                }
+                $("#loading-overlay").addClass("hide");
+            })
+            
+        }
+        
+        var bibleReader = {
+            version: 'KJV',
+            activerange: [40, 66],
+            plantitle: "Whole Bible",
+            scope: "WholeBible",
+            book: 1,
+            chapter: 1,
+            startdate: "2014-01-01",
+            planinstid: 66,
+            texttable: new Array(66),
+            statustable: new Array(66),
+            totalchapter: 0,
+            donechapter: 0,
+            displaychapter: fucntion(booknum, chapter) {
+                $("#singleviewpane .textbox").empty();
+                var bkname = biblebooklist[booknum][0];
+                $("#singleviewpane .bookname span").text(bkname + " " + chapter);
+                bstore.fetchChapter1("NET", booknum, chapter, 
+                function(retobj) {
+                    $.each(retobj, function(index, rec) {
+                        $("#singleviewpane .textbox").append(rec.verse + '. ' + rec.text);
+                    })
+                });
+            
+            }
+        }
+        
+        $(function() {      
+            
+            initLoginUser();
+            var bstore = new biblestore();
+            bstore.fetchChapter1("NET", 40, 1, 
+                function(retobj) {
+                    $.each(retobj, function(index, rec) {
+                        $("#singleviewpane .textbox").append(rec.verse + '. ' + rec.text);
+                    })
+                }
+            );
+    
+    
+            createBibleIndexMenu($("#bibleindex-dropdown"));
+            $("#bibleindexmenu ul li, #bibleindex-dropdown ul li").attr("chapter", "1");
+            $("#bibleindexmenu ul li, #bibleindex-dropdown ul li").click(function() {
+
+                var bookid = parseInt($(this).attr("bookid"));
+                var bookname = $(this).find("a").text();
+                var chapter = parseInt($(this).attr("chapter"));
+                //bibleReader.switchchapter(bookid, chapter);
+                $(this).attr("chapter", "1");
+            });
+        });
+        
+    </script>
+        
+</head>
+
+<body class="bg-metallic-plate">
+    <header>
+        <div style="" class="navbar navbar-fixed-top navbar-inverse">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                    </button>
+                    <a style="padding: 13px 15px" class="navbar-brand" href="index.php">
+                        <i class="fa fa-dot-circle-o"></i>
+                        <span>Bible Circle</span>
+                        <span style="font-size: 12px; font-family: '21st Century', fantasy">(beta)</span>
+                    </a>
+                </div>
+
+                    <div class="collapse navbar-collapse">                          
+                        <ul class="nav navbar-nav">
+                            
+          
+                            <li class="hide">
+                                <a id="bs-but" class="ktooltip" rel="tooltip" data-toggle="tooltip" title="Toggle BookShelf" href="#">
+                                    
+                                    <img style="position:relative; top: 50%; width: 22px;" alt="shelve" class="img-rounded brightness" src="//kosolution.net/images/icon-bookshelf-24.png"/>
+                                </a>
+                            </li>
+                            <li>
+                                <a id="plan-but" href="#">
+                                    <i class="glyphicon glyphicon-calendar"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a id="track-but" href="#">
+                                    <i class="glyphicon glyphicon-bullhorn"></i>
+                                </a>
+                            </li>
+                        </ul>                                           
+                        <ul class="nav navbar-nav navbar-right">  
+                            <li id="nav-app" class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                    <i class="fa fa-th"></i>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li class=""><a href="http://kosolution.net/SongApp"><i class="fa fa-music"></i>&nbsp Song App</a></li>
+                                    <li class=""><a href="http://kosolution.net/SongApp"><i class="fa fa-music"></i>&nbsp Song Mgmt</a></li>
+                                    <li class=""><a href="shoedrive.php"><i class="fa fa-rocket"></i>&nbsp Shoe Drive</a></li>
+                                    <li class="divider"></li>
+                                    <li><a href="javascript:;">Help</a></li>
+                                </ul>
+                            </li>
+                            <li id="nav-setting" class="dropdown hide">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                    <i class="icon-cog"></i>
+                                    Settings
+                                    <b class="caret"></b>
+                                </a>
+
+                                <ul class="dropdown-menu">
+                                        <li class="disabled"><a href="#"><i id="track" class="icon-check"></i>&nbsp Track Reading</a></li>
+                                        <li><a href="javascript:;"><i class="icon-list-alt"></i>&nbsp Account Settings</a></li>
+                                        <li class="hide"><a href="javascript:;"><i class="icon-lock"></i>&nbsp Privacy Settings</a></li>
+                                        <li class="divider"></li>
+                                        <li><a href="javascript:;">Help</a></li>
+                                </ul>
+                            </li>
+
+                            <li id="nav-user" class="hide dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                            <i class="fa fa-user"></i> 
+                                            <span class="user">User</span>
+                                            <b class="caret"></b>
+                                    </a>
+
+                                    <ul class="dropdown-menu">
+                                            <li><a href="profile.php"><i class="fa fa-suitcase"></i>&nbsp Profile</a></li>
+                                            <li class="divider"></li>
+                                            <li><a href="logout.php"><i class="fa fa-sign-out"></i>&nbsp Sign Out</a></li>
+                                    </ul>
+                            </li>
+                            
+                            <li id="nav-signup" class="hide"><a href="http://www.biblecircle.org/signin.php?tab=signup" class="ktooltip" data-toggle="tooltip" title="Sign up to track Reading">Sign Up</a></li>
+                            <li id="nav-login" class="hide"><a href="http://www.biblecircle.org/signin.php" class="ktooltip" data-toggle="tooltip" title="Sign In">Sign In</a></li>
+                        </ul> 
+                    </div><!--/.navbar-collapse -->	
+
+                </div>
+
+            
+            
+            </div>
+        </header>
+    
+    <div class="container">
+        <div style="padding-top: 7px" class="row">
+            <div style="font-size: 13px; line-height: 15px; float: left" id="singleviewpane" class="col-xs-12 col-sm-12 col-md-8 col-lg-8">
+                    <div class="panel panel-default panel-bible">
+                        <div class="panel-body">
+                            <div class="biblepanelheader">
+                                <div class="btn-group">
+                                    <button id ="btn-incfont" class="btn btn-default"><i class="fa fa-search-plus"></i></button>
+                                    <button id ="btn-decfont" class="btn btn-default"><i class="fa fa-search-minus"></i></button>
+                                    <button id ="btn-status" class="btn btn-default" data-toggle="button"><i class="fa fa-list"></i></button>
+                                </div>
+                                <div class="btn-group">
+                                    <button id="btn-prevbook" class="btn btn-default"><i class="fa fa-angle-double-left"></i></button>
+                                    <button id="btn-prevchapter" class="btn btn-default"><i class="fa fa-angle-left"></i></button>
+                                    <button id="btn-nextchapter" class="btn btn-default"><i class="fa fa-angle-right"></i></button>
+                                    <button id="btn-nextbook" class="btn btn-default"><i class="fa fa-angle-double-right"></i></button>
+
+                                </div>
+                                <div class="btn-group">
+                                    <button id="btn-versiontext" style="width:80px" class="btn btn-default" data-toggle="dropdown">KJV</button>
+                                    <a class="btn btn-default dropdown-toggle" data-toggle="dropdown"><i class="fa fa-caret-down"></i></a>             
+                                    <ul id="nav-version" class="dropdown-menu">
+                                        <li bvname="KJV"><a href="#">KJV - King James Version</a></li>
+                                        <li bvname="ESV"><a href="#">ESV - English Standard Version</a></li>
+                                        <li bvname="NET"><a href="#">NET - New EnglishVersion</a></li>
+                                        <li bvname="CUV"><a href="#">和合本 - Chinese Union Version</a></li>
+                                    </ul>
+
+                                </div>
+                                <div style="float: right;line-height:18px; font-size: 16px; padding-right:10px" class="btn-group bookname">
+                                    <a class="btn dropdown-toggle" data-toggle="dropdown"><span></span><b class="caret"></b></a>
+                                    <div id="bibleindex-dropdown" style="left: -300px; height: 620px; width:560px" class="dropdown-menu" role="menu"></div>
+                                </div>
+                            </div>
+                            <div style="overflow-y: scroll;" class="textbox"></div>
+
+                        </div>                            
+                    </div>
+            </div>
+            <div class="col-md-4 col-lg-4">
+                <div class="panel">
+                    <div class="panel-heading">
+                        <a href="#" style="font-size: 75%" class="pull-right">View all <b class="caret"></b></a>
+                        <h5>
+                            <i class="fa fa-circle-o"></i>
+                            <span>Your Bible Circles</span>
+                        </h5>
+                    </div>
+                        <div style="height: 300px;" class="panel-body">
+                            
+                        </div>  
+                    <div class="panel-heading panel-heading-sm">
+                        <div style="padding: 2px 4px;" class="panel-title">
+                            <i class="fa fa-circle-o"></i>
+                            <span>Your Notes</span>
+                        </div>
+                    </div>
+                        <div style="height: 400px" class="panel-body">
+                            <h3>Your Stuff</h3>
+                        </div>  
+                    </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="loading-overlay" style="text-align: center" class="overlay">    
+            <div style="display:inline-block; margin: 220px auto">
+                <div style="display: none; margin-bottom: 31px; background-color: #eee; padding: 10px 60px; border-radius: 5px;  font-size: 16px; color: black;">Signing  in</div>
+                <img src="images/loading-b1.gif" height="50">
+                <br/>
+                
+            </div>
+    </div>
+    
+    <!-- Place this asynchronous JavaScript just before your </body> tag -->
+    <script type="text/javascript">
+      (function() {
+       var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+       po.src = 'https://apis.google.com/js/client:plusone.js';
+       var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+     })();
+    </script>    
+</body>
+</html>
+
