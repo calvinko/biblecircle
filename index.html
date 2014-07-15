@@ -22,11 +22,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -->
-<!DOCTYPE html>
 <html>
 <head>
     <title>Bible Circle</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
     <!-- Bootstrap -->
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css" rel="stylesheet" >
@@ -141,141 +141,146 @@ THE SOFTWARE.
                 font-weight: bold;
                 line-height: 16px;
                 padding-top: 4px;
-            }
-            
-            ul.submenu {
-                margin: 0 0 10px 10px;
-                width: 160px;
-                float: left;
-                overflow: visible;
-            }
-            
-            .submenu > li {
-                list-style: none;
-            }
-            
-            ul.submenu {
-                padding-left: 15px;
-            }
-            
-            .submenu > li > a {
-              display: block;
-              padding: 3px 10px 3px 15px;
-              clear: both;
-              font-weight: normal;
-              line-height: 20px;
-              color: #333333;
-              white-space: nowrap;
-              
-            }
+        }
 
-            .submenu > li:hover
-            
-            {
-                color: #ffffff;
-                background-image: linear-gradient(to bottom,#fff 0,#e6e6e6 100%);
-                    
-            }
-            
-            .submenu > li > a:hover 
-            {
-                text-decoration:none;
-            }
-            
-            .submenu > li span.trig {
-                float: right;
-                padding: 3px 6px 4px 6px;
-                margin: auto;
-                
-            }
-            
-            .submenu > li span.trig:hover {
-                background-image: linear-gradient(to bottom,#fff 0,#e6e6e6 100%);
-                background-repeat: repeat-x;
-            }
+        ul.submenu {
+            margin: 0 0 10px 10px;
+            width: 160px;
+            float: left;
+            overflow: visible;
+        }
 
-            .submenu > li ul.chaptermenu {
-                background-image: linear-gradient(to bottom,#fff 0,#e6e6e6 100%);
-                background-repeat: repeat-x;
-                background-color: lightskyblue;
-                color: black;
-                position: absolute;
-                padding: 2px;
-                width: 168px;
-                max-height: 240px;
-                overflow-y: auto;
-                border: 2px solid grey;
-            }
-            
-            .submenu > li ul.chaptermenu li {
-                list-style: none;
-                display: inline-block;
-                
-                width: 24px;
-                height: 24px;
-                border: 1px solid black;
-                text-align: center;
-            }
-            
-            .submenu > li ul.chaptermenu li:hover {
-                background-color: #777;
-                color: #eee;
-            }
-            
-            .brow li {
-                float: left;
-                width: 30px;
-                height: 30px;
-                line-height: 26px;
-                
-                border: 1px solid #bbb;
-                text-align: center;
-                font-size:14px;
-                font-weight: 0.5;
-                font-family:  'arial', Charcoal, sans-serif;
-                cursor: pointer;
-                color: graytext;
-            }
+        .submenu > li {
+            list-style: none;
+        }
+
+        ul.submenu {
+            padding-left: 15px;
+        }
+
+        .submenu > li > a {
+          display: block;
+          padding: 3px 10px 3px 15px;
+          clear: both;
+          font-weight: normal;
+          line-height: 20px;
+          color: #333333;
+          white-space: nowrap;
+
+        }
+
+        .submenu > li:hover
+
+        {
+            color: #ffffff;
+            background-image: linear-gradient(to bottom,#fff 0,#e6e6e6 100%);
+
+        }
+
+        .submenu > li > a:hover 
+        {
+            text-decoration:none;
+        }
+
+        .submenu > li span.trig {
+            float: right;
+            padding: 3px 6px 4px 6px;
+            margin: auto;
+
+        }
+
+        .submenu > li span.trig:hover {
+            background-image: linear-gradient(to bottom,#fff 0,#e6e6e6 100%);
+            background-repeat: repeat-x;
+        }
+
+        .submenu > li ul.chaptermenu {
+            background-image: linear-gradient(to bottom,#fff 0,#e6e6e6 100%);
+            background-repeat: repeat-x;
+            background-color: lightskyblue;
+            color: black;
+            position: absolute;
+            padding: 2px;
+            width: 168px;
+            max-height: 240px;
+            overflow-y: auto;
+            border: 2px solid grey;
+        }
+
+        .submenu > li ul.chaptermenu li {
+            list-style: none;
+            display: inline-block;
+
+            width: 24px;
+            height: 24px;
+            border: 1px solid black;
+            text-align: center;
+        }
+
+        .submenu > li ul.chaptermenu li:hover {
+            background-color: #777;
+            color: #eee;
+        }
+
+        .brow li {
+            float: left;
+            width: 30px;
+            height: 30px;
+            line-height: 26px;
+
+            border: 1px solid #bbb;
+            text-align: center;
+            font-size:14px;
+            font-weight: 0.5;
+            font-family:  'arial', Charcoal, sans-serif;
+            cursor: pointer;
+            color: graytext;
+        }
     </style>
     <script type="text/javascript">
         
         var userid = 0;
         // Interface to bible text
         function biblestore() {
-            this.getChapter = function(version, booknum, chapter) {
+            var localstore = {};
+            this.getChapterLocal = function(version, booknum, chapter) {
+                var refString = version + '-' + parseInt(booknum) + ':' + parseInt(chapter);
                 
-            };
-            
-            this.fetchChapter = function(version, booknum, chapter) {
-                if (version === "CUV" || version === "KJV") {
-                    $.getJSON("bible/" + version + "/", {book: booknum, chapter: chapter}, function() {
-                        
-                    });
-                } else if (version === "NET") {
-                    bname = biblebooklist[booknum][0];
-                    bpassage = bname + ' ' + parseInt(chapter);
-                    $.getJSON("http://labs.bible.org/api/?callback=?", {passage: bpassage, type: "json"}, 
-                        function(robj) {
-                            
-                            
-                            $.each(robj, function(index, rec) {
-                                $("#singleviewpane .textbox").append(rec.text);
-                            });
-                        }
-                    );
+                if (localstore.hasOwnProperty(refString)) {
+                    return localstore[refString];
+                } else {
+                    console.log(refString);
+                    return null;
                 }
             };
             
-            this.fetchChapter1 = function(version, booknum, chapter, displayfunc) {
-                if (version === "CUV" || version === "KJV") {
-                    $.getJSON("bible/" + version + "/", {book: booknum, chapter: chapter}, displayfunc);
-                } else if (version === "NET") {
-                    bname = biblebooklist[booknum][0];
-                    bpassage = bname + ' ' + parseInt(chapter);
-                    $.getJSON("http://labs.bible.org/api/?callback=?", {passage: bpassage, type: "json", formatting: "text"}, displayfunc);
+            this.fetchChapterCallBack = function(version, booknum, chapter, cbfunc) {
+                var rows = this.getChapterLocal(version, booknum, chapter);
+                if (rows !== null) {
+                    cbfunc(rows);
+                    return;
+                } else {
+                    var refString = version + '-' + parseInt(booknum) + ':' + parseInt(chapter);
+                    if (version === "CUV" || version === "KJV") {
+                        $.getJSON("/api/bible/" + booknum + "/" + chapter, {version: version}, function(robj) {
+                            
+                            localstore[refString] = robj.rows;
+                            cbfunc(robj.rows);
+                        });
+                    } else if (version === "NET") {
+                        bname = biblebooklist[booknum][0];
+                        bpassage = bname + ' ' + parseInt(chapter);
+                        $.getJSON("//labs.bible.org/api/?callback=?", {passage: bpassage, type: "json"}, 
+                            function(robj) {
+                                localstore[refString] = robj;
+                                cbfunc(robj);
+                            }
+                        );
+                    }
+                    return;
                 }
-            } 
-           
+            };
+            return this;
         };
         
         function initLoginUser() {
@@ -288,12 +293,13 @@ THE SOFTWARE.
                     $("#nav-login, #nav-signup").removeClass("hide");
                 }
                 $("#loading-overlay").addClass("hide");
-            })
+            });
             
         }
+        var bstore = new biblestore();
         
         var bibleReader = {
-            version: 'KJV',
+            version: 'NET',
             activerange: [40, 66],
             plantitle: "Whole Bible",
             scope: "WholeBible",
@@ -301,47 +307,159 @@ THE SOFTWARE.
             chapter: 1,
             startdate: "2014-01-01",
             planinstid: 66,
-            texttable: new Array(66),
             statustable: new Array(66),
             totalchapter: 0,
             donechapter: 0,
-            displaychapter: fucntion(booknum, chapter) {
+            linestyle: "singleline",
+            displaytext: function(rows) {
+                $.each(rows, function(index, rec) {
+                    if (bibleReader.linestyle === "singleline") {
+                        $("#singleviewpane .textbox").append(rec.verse + '. ' + rec.text + "<br/>");
+                    } else {
+                        $("#singleviewpane .textbox").append(rec.verse + '. ' + rec.text);
+                    }
+                });
+            },
+            displaychapter: function(booknum, chapter) {
                 $("#singleviewpane .textbox").empty();
                 var bkname = biblebooklist[booknum][0];
                 $("#singleviewpane .bookname span").text(bkname + " " + chapter);
-                bstore.fetchChapter1("NET", booknum, chapter, 
-                function(retobj) {
-                    $.each(retobj, function(index, rec) {
-                        $("#singleviewpane .textbox").append(rec.verse + '. ' + rec.text);
-                    })
-                });
-            
+                bstore.fetchChapterCallBack(this.version, booknum, chapter, this.displaytext);
+                    
+            },
+            changeversion: function(ver) {
+                this.version = ver;
+                $("#btn-versiontext").text(ver);
+                this.displaychapter(this.book, this.chapter);
+            },
+            switchchapter: function(bnum, ch) {
+                    this.book = bnum;
+                    this.chapter = ch;
+                    this.displaychapter(bnum, ch);
+                    var bookname = biblebooklist[bnum][0];
+                    $("#bibleindex input").val(bookname + " " + ch);         
+           },
+            loadcurrentchapter: function () {
+                this.displaychapter(this.book, this.chapter);
+            },
+            loadnextchapter: function () {
+                if (this.chapter < biblebooklist[this.book][1]) {
+                    this.chapter = this.chapter + 1;
+                    this.switchchapter(this.book, this.chapter);
+                } else {
+                    if (this.book < 66) {
+                        this.book += 1;
+                        this.chapter = 1;
+                        this.switchchapter(this.book, this.chapter);
+                    }
+                }
+            },
+            loadprevchapter: function () {
+                this.chapter -= 1;
+                if (this.chapter <= 0) {
+                    if (this.book > 1) {
+                        this.book -= 1;
+                        this.chapter = biblebooklist[this.book][1];
+                        this.switchchapter(this.book, this.chapter);
+                    }
+                } else {
+                    this.switchchapter(this.book, this.chapter);
+                }
+            },
+            loadprevbook: function () {
+                if (this.book > 1) {
+                    this.book -= 1;
+                    this.chapter = 1;
+                    this.switchchapter(this.book, this.chapter);
+                }
+            },
+            loadnextbook: function () {
+                if (this.book < 66) {
+                    this.book += 1;
+                    this.chapter = 1;
+                    this.switchchapter(this.book, this.chapter);
+                }
             }
-        }
+        };
+        
         
         $(function() {      
             
             initLoginUser();
-            var bstore = new biblestore();
-            bstore.fetchChapter1("NET", 40, 1, 
-                function(retobj) {
-                    $.each(retobj, function(index, rec) {
-                        $("#singleviewpane .textbox").append(rec.verse + '. ' + rec.text);
-                    })
-                }
-            );
-    
+            bibleReader.displaychapter(40, 1); 
+            
+            $("#nav-version a").click(function(e) {
+                var vname = $(this).parent().attr("bvname");
+                bibleReader.changeversion(vname);
+            });
     
             createBibleIndexMenu($("#bibleindex-dropdown"));
-            $("#bibleindexmenu ul li, #bibleindex-dropdown ul li").attr("chapter", "1");
-            $("#bibleindexmenu ul li, #bibleindex-dropdown ul li").click(function() {
+            
+            $("#bibleindex-dropdown ul li").attr("chapter", "1");
+            $("#bibleindex-dropdown ul li").dblclick(function(e) {
 
                 var bookid = parseInt($(this).attr("bookid"));
                 var bookname = $(this).find("a").text();
                 var chapter = parseInt($(this).attr("chapter"));
-                //bibleReader.switchchapter(bookid, chapter);
+                bibleReader.switchchapter(bookid, chapter);
                 $(this).attr("chapter", "1");
+                e.stopPropagation();
             });
+            
+            
+            
+            $("#bibleindex-dropdown ul li").click(
+                function(e) {
+                    var bookid = parseInt($(this).attr("bookid"));
+                    var bookname = biblebooklist[bookid][0];
+                    var nchapter = biblebooklist[bookid][1];
+                    
+                    
+                    if ($(this).find(".chaptermenu").length === 0) {
+
+                        var m = $("<ul></ul>");
+                        m.addClass('chaptermenu');
+                        for (var i=1;i<=nchapter;i++) {
+                            var cli = $("<li>" + i + "</li>");
+                            cli.click(function (e) {
+                                
+                                
+                                bibleReader.switchchapter(bookid, $(this).text());
+                                $(this).parent().remove();
+                                $("#bibleindex-dropdown").dropdown('toggle')
+                                e.stopPropagation();
+                            });
+                            m.append(cli);
+                        }
+                        $(this).append(m);
+                    }
+
+                    
+                    e.stopPropagation();
+                }
+                /*function() {
+                    $(this).find('a span.trig').remove();
+                    $(this).find('ul.chaptermenu').remove();
+                }*/
+            );
+    
+            $("#btn-nextchapter").click(function() {
+                bibleReader.loadnextchapter();
+            });
+
+            $("#btn-prevchapter").click(function() {
+                bibleReader.loadprevchapter();
+            });
+
+             $("#btn-nextbook").click(function() {
+                bibleReader.loadnextbook();
+            });
+
+            $("#btn-prevbook").click(function() {
+                bibleReader.loadprevbook();
+            });
+
+            
         });
         
     </script>
@@ -358,7 +476,7 @@ THE SOFTWARE.
                             <span class="icon-bar"></span>
                             <span class="icon-bar"></span>
                     </button>
-                    <a style="padding: 13px 15px" class="navbar-brand" href="index.php">
+                    <a style="padding: 13px 15px" class="navbar-brand" href="index.html">
                         <i class="fa fa-dot-circle-o"></i>
                         <span>Bible Circle</span>
                         <span style="font-size: 12px; font-family: '21st Century', fantasy">(beta)</span>
@@ -429,8 +547,8 @@ THE SOFTWARE.
                                     </ul>
                             </li>
                             
-                            <li id="nav-signup" class="hide"><a href="http://www.biblecircle.org/signin.php?tab=signup" class="ktooltip" data-toggle="tooltip" title="Sign up to track Reading">Sign Up</a></li>
-                            <li id="nav-login" class="hide"><a href="http://www.biblecircle.org/signin.php" class="ktooltip" data-toggle="tooltip" title="Sign In">Sign In</a></li>
+                            <li id="nav-signup" class="hide"><a href="/signin.php?tab=signup" class="ktooltip" data-toggle="tooltip" title="Sign up to track Reading">Sign Up</a></li>
+                            <li id="nav-login" class="hide"><a href="/signin.php" class="ktooltip" data-toggle="tooltip" title="Sign In">Sign In</a></li>
                         </ul> 
                     </div><!--/.navbar-collapse -->	
 
@@ -443,7 +561,7 @@ THE SOFTWARE.
     
     <div class="container">
         <div style="padding-top: 7px" class="row">
-            <div style="font-size: 13px; line-height: 15px; float: left" id="singleviewpane" class="col-xs-12 col-sm-12 col-md-8 col-lg-8">
+            <div style="font-size: 13px; line-height: 15px; float: left; height: 700px" id="singleviewpane" class="col-xs-12 col-sm-12 col-md-8 col-lg-8">
                     <div class="panel panel-default panel-bible">
                         <div class="panel-body">
                             <div class="biblepanelheader">
@@ -460,7 +578,7 @@ THE SOFTWARE.
 
                                 </div>
                                 <div class="btn-group">
-                                    <button id="btn-versiontext" style="width:80px" class="btn btn-default" data-toggle="dropdown">KJV</button>
+                                    <button id="btn-versiontext" style="width:80px" class="btn btn-default" data-toggle="dropdown">NET</button>
                                     <a class="btn btn-default dropdown-toggle" data-toggle="dropdown"><i class="fa fa-caret-down"></i></a>             
                                     <ul id="nav-version" class="dropdown-menu">
                                         <li bvname="KJV"><a href="#">KJV - King James Version</a></li>
@@ -471,11 +589,19 @@ THE SOFTWARE.
 
                                 </div>
                                 <div style="float: right;line-height:18px; font-size: 16px; padding-right:10px" class="btn-group bookname">
-                                    <a class="btn dropdown-toggle" data-toggle="dropdown"><span></span><b class="caret"></b></a>
-                                    <div id="bibleindex-dropdown" style="left: -300px; height: 620px; width:560px" class="dropdown-menu" role="menu"></div>
+                                    <a class="btn dropdown-toggle" data-toggle="dropdown"><span></span>&nbsp<b class="caret"></b></a>
+                                    <div id="bibleindex-dropdown" style="left: -300px; height: 620px; width:560px" class="dropdown-menu" role="menu">
+                                        <div style="">
+                                            
+                                            <ul style="height: auto; overflow-y: auto;"  class='brow'>
+                                            </ul>
+                                            
+                                        </div>
+                                        <div class="divider"></div>
+                                    </div>
                                 </div>
                             </div>
-                            <div style="overflow-y: scroll;" class="textbox"></div>
+                            <div style="height: 650px; padding: 5px 8px; margin-top: 15px; overflow-y: scroll;" class="textbox"></div>
 
                         </div>                            
                     </div>

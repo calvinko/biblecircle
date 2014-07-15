@@ -90,9 +90,11 @@ function setBACookie( $id, $remember = false ) {
         } 
         $cookie = generateCookie( $id, $expiration ); 
         
-        if ( !setcookie( COOKIE_AUTH, $cookie, $expiration, COOKIE_PATH, COOKIE_DOMAIN, false, true ) ) { 
-            throw new AuthException( "Could not set cookie." ); 
-        } 
+        if (COOKIE_DOMAIN) {
+            if ( !setcookie( COOKIE_AUTH, $cookie, $expiration, COOKIE_PATH, COOKIE_DOMAIN, false, true ) ) { 
+                throw new AuthException( "Could not set cookie." ); 
+            }
+        }
 } 
      
 function generateCookie( $id, $expiration ) { 
@@ -145,7 +147,6 @@ class Authenticate {
         }
         
         throw new Exception("Database Error", 3);
-        return;
 
     } 
      
@@ -158,7 +159,7 @@ class Authenticate {
         } 
         $cookie = $this->generateCookie( $id, $expiration ); 
         
-        if ( !setcookie( COOKIE_AUTH, $cookie, $expiration, COOKIE_PATH, COOKIE_DOMAIN, false, true ) ) { 
+        if ( !setcookie( COOKIE_AUTH, $cookie, $expiration, COOKIE_PATH, COOKIE_DOMAIN, true, true ) ) { 
             throw new AuthException( "Could not set cookie." ); 
         } 
     } 
@@ -174,7 +175,7 @@ class Authenticate {
 
     public static function logOut( ) { 
 
-        setcookie( COOKIE_AUTH, "", time() - 1209600, COOKIE_PATH, COOKIE_DOMAIN, false, true ); 
+        setcookie( COOKIE_AUTH, "", time() - 1209600, COOKIE_PATH, COOKIE_DOMAIN, true, true ); 
 
     } 
 

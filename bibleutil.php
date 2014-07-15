@@ -24,6 +24,8 @@
  * THE SOFTWARE.
  */
 
+require_once 'config.php';
+
 $chinesebooknametbl = array(
     '創 世 記',
     '出 埃 及 記 ',
@@ -93,73 +95,142 @@ $chinesebooknametbl = array(
     '啟 示 錄'		
 );
 
+$biblebookinfo = [
+    ["Genesis", 50],
+    ["Exodus", 40],
+    ["Leviticus", 27],
+    ["Numbers", 36],
+    ["Deuteronomy", 34],
+    ["Joshua", 24],
+    ["Judges", 21],
+    ["Ruth", 4],
+    ["1 Samuel", 31],
+    ["2 Samuel", 24],
+    ["1 Kings", 22],
+    ["2 Kings", 25],
+    ["1 Chronicles", 29],
+    ["2 Chronicles", 36],
+    ["Ezra", 10],
+    ["Nehemiah", 13],
+    ["Esther", 10],
+    ["Jobs", 42],
+    ["Psalms", 150],
+    ["Proverbs", 31],
+    ["Ecclesistes", 12],
+    ['Song of Songs', 8],
+    ['Isaiah', 66],
+    ['Jeremiah' , 52],
+    ['Lamentations', 5],
+    ['Ezekiel' , 48],
+    ['Daniel', 12], 
+    ['Hosea' , 14],
+    ['Joel', 3],
+    ['Amos', 9],
+    ['Obadiah', 1],
+    ['Jonah', 4],
+    ['Micah' , 7],
+    ['Nahum' , 3],
+    ['Habakkuk', 3],
+    ['Zephaniah', 3],
+    ['Haggai', 2],
+    ['Zechariah', 14],
+    ['Malachi', 4],
+    ['Matthew', 28],
+    ['Mark', 16],
+    ['Luke', 24],
+    ['John', 21],
+    ['Acts', 28],
+    ['Romans', 16] ,
+    ['1 Corinthians' , 16],
+    ['2 Corinthians' , 13],
+    ['Galatians' , 6],
+    ['Ephesians' , 6],
+    ['Philippians' , 4],
+    ['Colossians' , 4],
+    ['1 Thessalonians', 5],
+    ['2 Thessalonians' , 3],
+    ['1 Timothy' , 6],
+    ['2 Timothy' , 4],
+    ['Titus' , 3, 0],
+    ['Philemon', 1, 3],
+    ['Hebrews' , 13, 4],
+    ['James' , 5, 17],
+    ['1 Peter', 5, 22],
+    ['2 Peter', 3, 27],
+    ['1 John' , 5, 30],
+    ['2 John' , 1, 35],
+    ['3 John' , 1, 36], 
+    ['Jude' , 1, 37],
+    ['Revelation', 22, 38],
+];
+
 $booktbl = array(
-    'genesis' => 1 ,
-    'exodus' => 2 ,
-    'leviticus' => 3 ,
-    'numbers' => 4 ,
-    'deuteronomy' => 5 ,
-    'joshua' => 6 ,
-    'judges' => 7 ,
-    'ruth' => 8 ,
-    '1samuel' => 9 ,
-    '2samuel' => 10 ,
-    '1kings' => 11 ,
-    '2kings' => 12 ,
-    '1 chronicles' => 13 ,
-    '2 chronicles' => 14 ,
-    'ezra' => 15 ,
-    'nehemiah' => 16 ,
-    'esther' => 17 ,
-    'job' => 18 ,
-    'psalms' => 19 ,
-    'proverbs' => 20 ,
-    'ecclesiastes' => 21 ,
-    'song of songs' => 22 ,
-    'isaiah' => 23 ,
-    'jeremiah' => 24 ,
-    'lamentations' => 25 ,
-    'ezekiel' => 26 ,
-    'daniel' => 27 ,
-    'hosea' => 28 ,
-    'joel' => 29 ,
-    'amos' => 30 ,
-    'obadiah' => 31 ,
-    'jonah' => 32 ,
-    'micah' => 33 ,
-    'nahum' => 34 ,
-    'habakkuk' => 35 ,
-    'zephaniah' => 36 ,
-    'haggai' => 37 ,
-    'zechariah' => 38 ,
-    'malachi' => 39 ,
-    'matthew' => 40 ,
-    'mark' => 41 ,
-    'luke' => 42 ,
-    'john' => 43 ,
-    'acts' => 44 ,
-    'romans' => 45 ,
-    '1corinthians' => 46 ,
-    '2corinthians' => 47 ,
-    'galatians' => 48 ,
-    'ephesians' => 49 ,
-    'philippians' => 50 ,
-    'colossians' => 51 ,
-    '1thessalonians' => 52 ,
-    '2thessalonians' => 53 ,
-    '1timothy' => 54 ,
-    '2timothy' => 55 ,
-    'titus' => 56 ,
-    'philemon' => 57 ,
-    'hebrews' => 58 ,
-    'james' => 59 ,
-    '1peter' => 60 ,
-    '2peter' => 61 ,
-    '1john' => 62 ,
-    '2john' => 63 ,
-    '3john' => 64 ,
-    'jude' => 65 ,
-    'revelation' => 66
+    'Genesis' => 1 ,
+    'Exodus' => 2 ,
+    'Leviticus' => 3 ,
+    'Numbers' => 4 ,
+    'Deuteronomy' => 5 ,
+    'Joshua' => 6 ,
+    'Judges' => 7 ,
+    'Ruth' => 8 ,
+    '1 Samuel' => 9 ,
+    '2 Samuel' => 10 ,
+    '1 Kings' => 11 ,
+    '2 Kings' => 12 ,
+    '1 Chronicles' => 13 ,
+    '2 Chronicles' => 14 ,
+    'Ezra' => 15 ,
+    'Nehemiah' => 16 ,
+    'Esther' => 17 ,
+    'Job' => 18 ,
+    'Psalms' => 19 ,
+    'Proverbs' => 20 ,
+    'Ecclesiastes' => 21 ,
+    'Song of Solomon' => 22 ,
+    'Isaiah' => 23 ,
+    'Jeremiah' => 24 ,
+    'Lamentations' => 25 ,
+    'Ezekiel' => 26 ,
+    'Daniel' => 27 ,
+    'Hosea' => 28 ,
+    'Joel' => 29 ,
+    'Amos' => 30 ,
+    'Obadiah' => 31 ,
+    'Jonah' => 32 ,
+    'Micah' => 33 ,
+    'Nahum' => 34 ,
+    'Habakkuk' => 35 ,
+    'Zephaniah' => 36 ,
+    'Haggai' => 37 ,
+    'Zechariah' => 38 ,
+    'Malachi' => 39 ,
+    'Matthew' => 40 ,
+    'Mark' => 41 ,
+    'Luke' => 42 ,
+    'John' => 43 ,
+    'Acts' => 44 ,
+    'Romans' => 45 ,
+    '1 Corinthians' => 46 ,
+    '2 Corinthians' => 47 ,
+    'Galatians' => 48 ,
+    'Ephesians' => 49 ,
+    'Philippians' => 50 ,
+    'Colossians' => 51 ,
+    '1 Thessalonians' => 52 ,
+    '2 Thessalonians' => 53 ,
+    '1 Timothy' => 54 ,
+    '2 Timothy' => 55 ,
+    'Titus' => 56 ,
+    'Philemon' => 57 ,
+    'Hebrews' => 58 ,
+    'James' => 59 ,
+    '1 Peter' => 60 ,
+    '2 Peter' => 61 ,
+    '1 John' => 62 ,
+    '2 John' => 63 ,
+    '3 John' => 64 ,
+    'Jude' => 65 ,
+    'Revelation' => 66
 );
 
 $booknametbl = array_keys($booktbl);
@@ -233,6 +304,10 @@ $bktbl = array (
     'rev' => 66 ,
 );
 
+$bkbasetbl = array(
+    
+);
+
 function getTextESV($passage="John+1")
 {
     $passage = urlencode($passage);
@@ -286,6 +361,21 @@ function getBookName($booknum, $version)
     }
 }
 
+function parseBookName($book, $version) 
+{
+    if (is_numeric($book)) {
+        $booknum = $book + 0;
+        if (!is_int($booknum) || $booknum < 1 || $booknum > 66) {
+            $booknum = 1; 
+        }
+        return getBookName($booknum, $version);   
+        
+    } else {
+        $booknum = getBookNumber($book);
+        return getBookName($booknum, $version);
+    }
+}
+
 function parsePassagePhrase($passage)
 {
     $passage = strtolower($passage);
@@ -304,6 +394,148 @@ function parsePassagePhrase($passage)
     }
 }
 
+function getChapterText($book, $chapter, $version) {
+    global $mysqli;
+    if (is_numeric($book)) {
+        $booknum = $book + 0;
+        if (!is_int($booknum) || $booknum < 1 || $booknum > 66) {
+            $booknum = 1; 
+        }
+    } else {
+        $booknum = getBookNumber($book);
+    }
+    if (strtoupper($version) == 'CUV') {
+        $texttbl = 'hb5text';
+    } else {
+        $texttbl = 'kjvtext';
+    }
+    $result = $mysqli->query("SELECT book,chapter,verse,text FROM $texttbl WHERE book=$booknum and chapter=$chapter ORDER BY chapter, verse");
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+    } else {
+            $data = array(); 
+    }
+    return $data;
+}
+
+class BibleLogMgr {
+    
+    public $mysqli;
+    public $errmsg;
+    
+    public function __construct() {
+        $this->mysqli = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+        return $this;
+    }
+    
+    // pack the reading log from array(bookid, array of bool status) into 
+    public function packLog($rlogbook) {
+        
+    }
+    
+    // expand the reading log 
+    public function unpackLog($prlog) {
+        
+    }
+    
+    public function convertToLoc($booknum, $chnum) {
+        if ($booknum == 19)  {
+            if ($chnum <= 60) {
+                return [19, $chnum];
+            } else if ($chnum <=120 ) {
+                return [67, $chnum-60];
+            } else {
+                return [68, $chnum-120];
+            }
+        } else if ($booknum == 23 && $chnum > 60) {
+            return [69, $chnum-60];
+        } else {
+            return [$booknum, $chnum];
+        }
+    }
+    
+    public function convertFrom($blknum, $section) {
+        
+    }
+    
+    public function markChapterDone($instid, $booknum, $chnum) {
+        
+        $loc = convertToLoc($booknum, $chnum);
+        $blk = $loc[0];
+        $section = $loc[1];
+        $newval = (1 << $section);
+        $result = $this->mysqli->query("UPDATE biblerlog set data = data | $newval WHERE instid = $instid and blknum = $blk");
+        return $result;
+    }
+    
+    public function unmarkChapterDone($instid, $booknum, $chnum) {
+        $loc = convertToLoc($booknum, $chnum);
+        $blk = $loc[0];
+        $section = $loc[1];
+        $newval = ~ (1 << $section);
+        $result = $this->mysqli->query("UPDATE biblerlog set data = data & $newval WHERE instid = $instid and blknum = $blk");
+        return $result;
+    }
+    
+    public function getChapterStatus($instid, $booknum, $chnum) {
+        $loc = convert($booknum, $chnum);
+        $blk = $loc[0];
+        $section = $loc[1];
+        $result = $this->mysqli->query("SELECT data from biblerlog WHERE instid=$instid and blknum=$blk");
+        if ($result) {
+            $row = $result->fetch_row();
+            $mask = (1 << $section);
+            return $row & $mask;
+        } else {
+            return 0;
+        }
+    }
+    
+    // 8 byte integer to 64 bit array 
+    public function unpackLogData($data, $size) {
+        $mask = 1;
+        for ($i=0; $i<$size; $i++) {
+            $ret[$i] = ($data & $mask) != 0 ? 1 : 0;
+            $mask = $mask << 1;
+        } 
+        return $ret;
+    }
+    
+    public function getAllChapterStatus($instid) {
+        global $biblebookinfo;
+        $result = $this->mysqli->query("SELECT blknum,data from biblerlog WHERE instid=$instid ORDER BY Blknum ");
+        if ($result) {
+            while ($row = $result->fetch_row()) {
+                $bnum = $row[0];
+                if ($bnum < 67) {
+                    $nchp = $biblebookinfo[$bnum][1];
+                    $statustbl[$bnum] = $this->unpackLogData($row[1], $nchp);
+                }
+            }
+            return $statustbl;
+        } else {
+            throw new Exception("no result");
+        }
+    }
+    
+    public function newReadingPlan() {
+  
+        if (!($stmt = $this->mysqli->prepare("INSERT INTO biblerlog (instid, blknum) VALUES (?, ?)"))) {
+            $this->errmsg = "Prepare failed: (" . $this->mysqli->errno . ") " . $this->mysqli->error;
+            echo $this->errmsg;
+            return 0;
+        }
+        
+        $instid = 7; 
+        for ($i=1;$i<=69;$i++) {
+            $stmt->bind_param("ii", $instid, $i);
+            $stmt->execute();              
+        }
+    }
+}
+
 // function handling the REST /bible api 
 // /bible/{BOOK}/{chapter}?version=XX 
 // 
@@ -319,3 +551,8 @@ function bibleapi($elm, $vars, $ret)  {
             $data = "Error" . mysql_error();     
     }
 } 
+
+
+$logmgr = new BibleLogMgr();
+
+$logmgr->newReadingPlan();

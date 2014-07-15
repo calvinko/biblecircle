@@ -24,7 +24,7 @@
  */
 
 
-$durl = "http://www.biblecircle.org";
+$durl = "//www.biblecircle.org";
 
 if (filter_has_var(INPUT_GET, 'tab')) {
     $tab = filter_input(INPUT_GET, 'tab', FILTER_SANITIZE_STRING);
@@ -133,7 +133,7 @@ if ( isset($_GET['dpage'])) {
             $("#btn-login").click(function(e) {
                 
                 var username = $("#login-username").val();
-                if (username == "") {
+                if (username === "") {
                     $('#login-alert').text("Invalid Username");
                     $('#login-alert').show();
                 } else {
@@ -146,9 +146,10 @@ if ( isset($_GET['dpage'])) {
                             function(retdata) {
                                 var retobj = $.parseJSON(retdata);
                                 console.log(retdata);
-                                if (retobj.status === 1)
-                                    window.location = "<?php echo $durl ?>";
-                                else {
+                                if (retobj.status === 1) {
+                                    
+                                    window.location = "/";
+                                } else {
                                     $("#login-overlay").addClass("hide");
                                     $('#login-alert').text(retobj.errormsg);
                                     $('#login-alert').show();
@@ -178,7 +179,7 @@ if ( isset($_GET['dpage'])) {
                                 $("#login-alert").html("<p>Facebook login failure</p>");
                                 $("#login-alert").show();
                             } else {
-                                window.location = "http://www.biblecircle.org";
+                                window.location = "//www.biblecircle.org";
                             } 
                             
                         })
@@ -198,7 +199,7 @@ if ( isset($_GET['dpage'])) {
                                             $("#login-alert").html("<p>Facebook login failure</p>");
                                             $("#login-alert").show();
                                         } else {
-                                            window.location = "http://www.biblecircle.org";
+                                            window.location = "//www.biblecircle.org";
                                         }
                                     }
                                )

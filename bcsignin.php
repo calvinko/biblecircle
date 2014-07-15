@@ -27,6 +27,7 @@ if ( isset($_POST['username']) && isset($_POST['passwd'])) {
         
         $ret['remember'] = $remember;
         $ret['status'] = 1;
+        $ret['errormsg'] = "Succeed";
         
     } catch (AuthException $e) {
         $ret['status'] = 0;

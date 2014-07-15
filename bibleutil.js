@@ -102,7 +102,7 @@ function createSubMenu(c1, c2) {
         li.attr("bookid", i);
         li.attr("chapter", "1");
         li.find("a").text(biblebooklist[i][0]);
-
+        
         ul.append(li);
     }
     return ul;

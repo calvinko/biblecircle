@@ -6,7 +6,7 @@
  * and open the template in the editor.
  */
 
-# biblecircle.org/bible/{version}/{book}/{chapter}
+# biblecircle.org/api/bible/{book}/{chapter}?version=ver
 # biblecircle.org/users/{username}/profile
 # biblecircle.org/users/me/profile
 # biblecircle.org/plan/{planid}

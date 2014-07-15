@@ -3,7 +3,7 @@
 /* 
  * The MIT License
  *
- * Copyright 2014 Calvin Ko.
+ * Copyright 2014 ko.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,43 +22,37 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * *
- * biblecircle.org/api/bible/{book}/{chapter}?version=ver
+ */
+
+require_once 'config.php';
+require_once "bibleutil.php";
+
+/*
+$mysqli = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+if ($mysqli->connect_error) {
+    die('Connect Error: ' . $mysqli->connect_error);
+}
+ * 
+ */
+     
+//$result = $mysqli->query("SELECT * from biblerlog");
+/*    
+if ($result) {
+    echo "has result";
+    
+    while ($row = $result->fetch_row()) {
+                $data = $row[2];
+                echo $data;
+                echo "Done\n";
+    }
+} else {
+    echo "error\t:";
+    echo $mysqli->error;
+    echo $mysqli->connect_errno;
+}
  * 
  */
 
+$bmgr = new BibleLogMgr();
 
-require_once 'config.php';
-require_once 'bibleutil.php';
 
-$mysqli = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
-$mysqli->query("SET NAMES 'utf8'");
-
-$route = filter_input(INPUT_GET, "__route__", FILTER_DEFAULT);
-
-if ($route[0] == "/") {
-    $route = substr($route, 1);
-}
-        
-$elms = explode("/", $route);
-
-$book = filter_var($elms[2], FILTER_DEFAULT);
-$chapter = filter_var($elms[3], FILTER_DEFAULT);
-if ( filter_has_var(INPUT_GET, 'version')) {
-    $version = filter_input(INPUT_GET, 'version', FILTER_DEFAULT);
-} else {
-    $version = 'KJV';
-}
-
-//if ( filter_has_var(INPUT_GET, 'tab')) {
-//    $book = filter_input(INPUT_GET, 'book', FILTER_DEFAULT);
-//}
-
-$data = getChapterText($book, $chapter, $version);
-$retval['bookname'] = parseBookName($book, $version);
-$retval['chapter'] = $chapter;
-$retval['title'] = $retval['bookname'] . ' ' . $chapter;
-$retval['rows'] = $data;
-echo json_encode($retval);
-
-?>
