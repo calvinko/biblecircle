@@ -30,14 +30,12 @@ if (filter_has_var(INPUT_GET, 'tab')) {
     $tab = filter_input(INPUT_GET, 'tab', FILTER_SANITIZE_STRING);
 } else {
     $tab = 'login';
-};
-
-if ( isset($_GET['dpage'])) {
-    $dpage = $_GET['dpage'];
 }
- if ( isset($_POST['dpage'])) {
-    $dpage = $_POST['dpage'];
- }
+
+if (filter_has_var(INPUT_GET, 'dpage')) {
+    $dpage = filter_input(INPUT_GET, $tab, FILTER_SANITIZE_STRING);
+}
+
  
  if ($dpage == "songmgmt") {
      $durl = "/BibleApp/songmgmt.php";
@@ -114,8 +112,6 @@ if ( isset($_GET['dpage'])) {
            }(document));
         </script>
         <script>
-        
-        
         
         $(function() {
             

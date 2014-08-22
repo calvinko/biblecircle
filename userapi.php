@@ -27,12 +27,11 @@
 require_once 'authutil.php';
 require_once 'bcutil.php';
 
-$userid = 0;
-    
-$astatus = Authenticate::validateAuthCookie();
-if ($astatus) {
-    $userid = Authenticate::getUserId();
-} 
+// resource object naming: (object_type, object_id)
+// object_type - (OT_user_profile, 100:userid)
+//               (OT_client_app, 10001) 
+// need an access token - [(client, object/resource, validtime, nounce), signature]
+// 
 
 function get_request_userid($instr, $userid) {
     if ($instr == "me") {
@@ -50,7 +49,7 @@ $ret['_status'] = 0;
 $ret['api'] = "userapi";
 $ret['userid'] = $userid;
 
-$rmethod = $_SERVER['REQUEST_METHOD'];
+$rmethod = filter_input(INPUT_SERVER, 'REQUEST_METHOD', FILTER_SANITIZE_STRING);
 $ret['method'] = $rmethod;
 if ($userid != 0) {
     $route = $_GET["__route__"];
@@ -109,6 +108,8 @@ if ($userid != 0) {
                 $ret['_errormsg'] = 'Access denied';
             }
         }
+    } elseif ($rmethod == "PUT") {
+        
     }
 }
 

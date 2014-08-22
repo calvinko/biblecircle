@@ -3,7 +3,7 @@
 /* 
  * The MIT License
  *
- * Copyright 2014 Calvin Ko.
+ * Copyright 2014 ko.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,11 +23,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  * 
- * 
- * 
- * biblecircle.org/api/bible/{book}/{chapter}?version=ver
  * biblecircle.org/api/plan/planinstid/day/section POST/GET status ?accesstoken=.... 
  * biblecircle.org/api/plan/planinstid/day/
+ * 
  */
 
 
@@ -45,23 +43,49 @@ if ($route[0] == "/") {
         
 $elms = explode("/", $route);
 
-$book = filter_var($elms[2], FILTER_DEFAULT);
-$chapter = filter_var($elms[3], FILTER_DEFAULT);
-if ( filter_has_var(INPUT_GET, 'version')) {
-    $version = filter_input(INPUT_GET, 'version', FILTER_DEFAULT);
-} else {
-    $version = 'KJV';
+
+if (isset($elms[2])) {
+    $instid = filter_var($elms[2], FILTER_DEFAULT);
+   
 }
 
-//if ( filter_has_var(INPUT_GET, 'tab')) {
-//    $book = filter_input(INPUT_GET, 'book', FILTER_DEFAULT);
-//}
+ 
+if (isset($elms[3])) {
+    $day = filter_var($elms[3], FILTER_DEFAULT);
+}
+if (isset($elms[4])) {
+    $section = filter_var($elms[4], FILTER_DEFAULT);
+}
 
-$data = getChapterText($book, $chapter, $version);
-$retval['bookname'] = parseBookName($book, $version);
-$retval['chapter'] = $chapter;
-$retval['title'] = $retval['bookname'] . ' ' . $chapter;
-$retval['rows'] = $data;
-echo json_encode($retval);
+//echo "route = $route \n";
+//echo "instid = $instid \n";
+//echo "day = $day \n";
 
-?>
+$rmethod = filter_input(INPUT_SERVER, 'REQUEST_METHOD', FILTER_DEFAULT);
+//echo $rmethod;
+
+$logmgr = new BibleLogMgr();
+if ($rmethod == 'GET') {
+    try {
+        if ($day == 'all') {
+            $statusarray = $logmgr->getAllChapterStatus($instid);
+            //echo "day status";
+            $ret['_status'] = 'success';
+            $ret['statustable'] = $statusarray;
+            echo json_encode($ret);
+            exit();
+        }
+    } catch(Exception $e) {
+        echo "Exception " . $e->getMessage();
+    }
+} else if ($rmethod == 'POST') {
+    
+}
+
+
+
+
+
+
+
+

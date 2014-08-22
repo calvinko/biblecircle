@@ -6,15 +6,21 @@
  * and open the template in the editor.
  */
 
-require_once "authutil.php";
-require_once "bcutil.php";
+require_once "userauth.php";
 
 $ret['errormsg'] = "Invalid username or password";
 $ret['status'] = 0;
 
-if ( isset($_POST['username']) && isset($_POST['passwd'])) {
-    $username = $_POST['username'];
-    $passwd = $_POST['passwd'];
+try {
+    $auth = new UserManager(100);
+    print_r($auth);
+} catch (Exception $e) {
+    echo $e->getMessage();
+}
+
+if (filter_has_var(INPUT_POST, 'username') && filter_has_var(INPUT_POST, 'passwd')) {
+    $username = filter_input(INPUT_POST, 'username', FILTER_DEFAULT);
+    $passwd = filter_input(INPUT_POST, 'passwd', FILTER_DEFAULT);
     if ( intval(filter_input(INPUT_POST, "remember")) != 0) {
             $remember = true;
         } else {
@@ -22,12 +28,16 @@ if ( isset($_POST['username']) && isset($_POST['passwd'])) {
     }
    
     try {
-        $auth = new Authenticate($username);
-        $auth->authenticate($username, $passwd, $remember);
-        
-        $ret['remember'] = $remember;
-        $ret['status'] = 1;
-        $ret['errormsg'] = "Succeed";
+        $auth = new UserManager($username);
+        if ($auth->checkpasswd("$passwd") == 1) {
+            $ret['remember'] = $remember;
+            $auth->setAuthCookie($remember);
+            $ret['status'] = 1;
+            $ret['errormsg'] = "Succeed";
+        } else {
+            $ret['status'] = 0;
+            $ret['errormsg'] = "Incorrect password";
+        }
         
     } catch (AuthException $e) {
         $ret['status'] = 0;
@@ -37,7 +47,9 @@ if ( isset($_POST['username']) && isset($_POST['passwd'])) {
     
 } else {
     $ret['status'] = 0;
-    $ret['errormsg'] = "Invalid username or password";
+    $ret['errormsg'] = "Sign In Error";
 }
+
+
 
 echo json_encode($ret);

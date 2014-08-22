@@ -505,13 +505,29 @@ class BibleLogMgr {
     
     public function getAllChapterStatus($instid) {
         global $biblebookinfo;
-        $result = $this->mysqli->query("SELECT blknum,data from biblerlog WHERE instid=$instid ORDER BY Blknum ");
+        $result = $this->mysqli->query("SELECT blknum,data from biblerlog WHERE instid=$instid ORDER BY blknum ");
         if ($result) {
             while ($row = $result->fetch_row()) {
                 $bnum = $row[0];
                 if ($bnum < 67) {
-                    $nchp = $biblebookinfo[$bnum][1];
+                    $nchp = $biblebookinfo[$bnum-1][1];
                     $statustbl[$bnum] = $this->unpackLogData($row[1], $nchp);
+                } else if ($bnum <= 68) {
+                    $data = $row[1];
+                    $mask = 1;
+                    $base = ($bnum == 67 ? 60 : 120);
+                    $upper = ($bnum == 67 ? 60 : 30);
+                    for ($i=0;$i<$upper;$i++) {
+                        $statustbl[19][$i+$base] = ($data & $mask) != 0 ? 1 : 0;
+                        $mask = $mask << 1;
+                    }
+                } else if ($bnum == 69) {
+                    $data = $row[1];
+                    $mask = 1;
+                    for ($i=0;$i<6;$i++) {
+                        $statustbl[23][$i+60] = ($data & $mask) != 0 ? 1 : 0;
+                        $mask = $mask << 1;
+                    }
                 }
             }
             return $statustbl;
@@ -553,6 +569,6 @@ function bibleapi($elm, $vars, $ret)  {
 } 
 
 
-$logmgr = new BibleLogMgr();
+//$logmgr = new BibleLogMgr();
 
-$logmgr->newReadingPlan();
+//$logmgr->newReadingPlan();

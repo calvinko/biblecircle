@@ -24,8 +24,8 @@
  * THE SOFTWARE.
  */
 
-require_once "authutil.php";
-require_once "bcutil.php";
+
+require_once "userauth.php";
 
 $errormsg = array();
 $ret['status'] = 0;
@@ -87,12 +87,6 @@ function validicode($code)
     return $code == "3350";
 }
 
-$mysqli = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
-if ($mysqli->connect_error) {
-    $ret['errormsg'][] = "Internal Error: Can't connect to DB";
-    echo json_encode($ret);
-    exit();
-}
 
 if ( isset($_POST['email']) && isset($_POST['passwd'])) {
     $email = $_POST['email'];

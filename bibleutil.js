@@ -95,7 +95,7 @@ var biblebooklist = [
 ];
             
 function createSubMenu(c1, c2) {
-    var ul = $("<ul style='height: 600px' class='submenu'>");
+    var ul = $("<ul class='submenu'>");
     var i;
     for (i=c1;i<=c2;i++) {
         var li = $("<li><a href='#'></a></li>");
@@ -109,8 +109,9 @@ function createSubMenu(c1, c2) {
 }
 
 function createBibleIndexMenu(mdiv) {
-    mdiv.append(createSubMenu(1,22));
-    mdiv.append(createSubMenu(23,44));
-    mdiv.append(createSubMenu(45,66));
+    mdiv.append(createSubMenu(1,17));
+    mdiv.append(createSubMenu(18,34));
+    mdiv.append(createSubMenu(35,51));
+    mdiv.append(createSubMenu(52,66));
 }
              
