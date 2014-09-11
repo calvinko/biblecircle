@@ -89,8 +89,9 @@ if ($astatus) {
                     } else {
                         var spbtn = $("<button style='margin-left: 20px' class='btn btn-sm btn-primary'>change password</button>");
                         spbtn.click(function() {
-                            $("#passwdrow").hide();
-                            $("#infobox .chpasswd").show();
+                            //$("#passwdrow").hide();
+                            //$("#infobox .chpasswd").show();
+                            $("#change-passwd-modal").modal('show');
                             return(false);
                         })
                         $("#passwdrow div").empty().append("*******").append(spbtn);
@@ -117,7 +118,7 @@ if ($astatus) {
                             <span class="icon-bar"></span>
                             <span class="icon-bar"></span>
                     </button>
-                    <a style="padding: 13px 15px" class="navbar-brand" href="index.php">
+                    <a style="padding: 13px 15px" class="navbar-brand" href="/">
                         <i class="fa fa-dot-circle-o"></i>
                         <span>Bible Circle</span>
                         <span style="font-size: 12px; font-family: '21st Century', fantasy">(beta)</span>
@@ -333,6 +334,42 @@ if ($astatus) {
                 </div>
             </div>
         </div>
+    
+    <div id="change-passwd-modal" class="modal">
+            <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Change Password</h4>
+              </div>
+              <div class="modal-body">
+                  <table class="nb-table">
+                      
+                    <tr><th width="150px">Old Password</th>
+                        <td>                            
+                            <input class="form-control" type="password" name="oldpasswd" placeholder="old password" >                          
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr><th width="150px">New Password</th>
+                        <td>
+                            <input class="form-control" type="password" name="passwd1" placeholder="New password" >
+                        </td>
+                    </tr>   
+                    <tr><th width="150px">Verify Password</th>
+                        <td>
+                            <input class="form-control" type="password" name="passwd2" placeholder="Re-enter password" >
+                        </td>
+                    </tr>   
+                </table>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="bta-confirm btn btn-primary">Confirm</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+              </div>
+            </div><!-- /.modal-content -->
+            </div>
+        </div><!-- /.modal -->
     
 </body>
       

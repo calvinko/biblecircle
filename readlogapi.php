@@ -23,7 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  * 
- * biblecircle.org/api/plan/planinstid/day/section POST/GET status ?accesstoken=.... 
+ * biblecircle.org/api/plan/planinstid/day/section POST/GET ?filter=status|info|all ?accesstoken=.... 
  * biblecircle.org/api/plan/planinstid/day/
  * 
  */
@@ -52,9 +52,11 @@ if (isset($elms[2])) {
  
 if (isset($elms[3])) {
     $day = filter_var($elms[3], FILTER_DEFAULT);
+    $arg[3] = filter_var($elms[3], FILTER_DEFAULT);
 }
 if (isset($elms[4])) {
     $section = filter_var($elms[4], FILTER_DEFAULT);
+    $arg[4] = filter_var($elms[4], FILTER_DEFAULT);
 }
 
 //echo "route = $route \n";
@@ -74,12 +76,54 @@ if ($rmethod == 'GET') {
             $ret['statustable'] = $statusarray;
             echo json_encode($ret);
             exit();
+        } else if (is_integer($day)) {
+            $book = intval($day);
+            if ($arg[4] != NULL && is_int($arg[4])) {
+                $chapter = intval($arg[4]);
+                if (filter_has_var(INPUT_GET, "filter")) {
+                    $filter = filter_input(INPUT_GET, "filter", FILTER_DEFAULT);
+                    if ($filter == "all") {
+                        
+                    } else if ($filter == 'status') {
+                        $status = $logmgr->getChapterStatus($instid, $book, $chapter);
+                        $ret['_status'] = 'success';
+                        $ret['status'] = $status;
+                    } else if ($filter == 'desc') {
+                        
+                    }
+                } else {
+                    $status = $logmgr->getChapterStatus($instid, $book, $chapter);
+                    $ret['_status'] = 'success';
+                    $ret['status'] = $status;
+                };
+                echo json_encode($ret);
+                exit(0);
+            }
+        } else {
+            echo "method is $rmethod";
         }
     } catch(Exception $e) {
+        $ret['_status'] = 'failure';
+        echo json_encode($ret);
         echo "Exception " . $e->getMessage();
+        exit();
     }
 } else if ($rmethod == 'POST') {
     
+    try {
+        $status = filter_input(INPUT_POST, "status", FILTER_SANITIZE_NUMBER_INT);
+        $logmgr->updateChapterStatus($instid, $day, $section, $status);
+        $ret['_status'] = 'success';
+        $ret['_input'] = $status;
+        //$ret['chpstatus'] = '1';
+        $ret['chpstatus'] = $logmgr->getChapterStatus($instid, $day, $section);
+        echo json_encode($ret);
+    } catch (Exception $ex) {
+        $ret['_status'] = 'failure';
+        echo "Exception " . $ex->getMessage();
+    }
+} else {
+    echo "null method";
 }
 
 

@@ -462,36 +462,73 @@ class BibleLogMgr {
     
     public function markChapterDone($instid, $booknum, $chnum) {
         
-        $loc = convertToLoc($booknum, $chnum);
+        $loc = $this->convertToLoc($booknum, $chnum);
         $blk = $loc[0];
-        $section = $loc[1];
+        $section = $loc[1] - 1;
         $newval = (1 << $section);
         $result = $this->mysqli->query("UPDATE biblerlog set data = data | $newval WHERE instid = $instid and blknum = $blk");
         return $result;
     }
     
     public function unmarkChapterDone($instid, $booknum, $chnum) {
-        $loc = convertToLoc($booknum, $chnum);
+        $loc = $this->convertToLoc($booknum, $chnum);
         $blk = $loc[0];
-        $section = $loc[1];
+        $section = $loc[1] - 1;
         $newval = ~ (1 << $section);
         $result = $this->mysqli->query("UPDATE biblerlog set data = data & $newval WHERE instid = $instid and blknum = $blk");
         return $result;
     }
     
-    public function getChapterStatus($instid, $booknum, $chnum) {
-        $loc = convert($booknum, $chnum);
-        $blk = $loc[0];
-        $section = $loc[1];
-        $result = $this->mysqli->query("SELECT data from biblerlog WHERE instid=$instid and blknum=$blk");
+    public function updateChapterStatus($instid, $booknum, $chnum, $status) {
+        if ($status == 0 || $status == "0") {
+            $this->unmarkChapterDone($instid, $booknum, $chnum);
+        } else {
+            $this->markChapterDone($instid, $booknum, $chnum);
+        }
+        return;
+    }
+    
+    public function getChapterStatusReadingPlan($instid, $booknum, $chnum) {
+        $sql = "SELECT status from bibleplanreadlog WHERE instid=$instid and day=$booknum and section=$chnum";
+        $result = $this->mysqli->query($sql);
+        echo "$booknum\n";
         if ($result) {
             $row = $result->fetch_row();
-            $mask = (1 << $section);
-            return $row & $mask;
+            echo $row[0];
+            return $row[0];
         } else {
             return 0;
         }
     }
+    
+    public function getBookStatusReadingPlan($instid, $booknum) {
+        $sql = "SELECT section,status from bibleplanreadlog WHERE instid=$instid and day=$booknum ORDER BY section";
+        $result = $this->mysqli->query($sql);
+        if ($result) {
+            while ($row = $result->fetch_row()) {
+                $rows[] = $row;
+            }
+            return $rows;
+        } else {
+            return 0;
+        }
+    }
+    
+    public function getChapterStatus($instid, $booknum, $chnum) {
+        $loc = $this->convertToLoc($booknum, $chnum);
+        $blk = $loc[0];
+        $section = $loc[1] - 1;
+        $result = $this->mysqli->query("SELECT data from biblerlog WHERE instid=$instid and blknum=$blk");
+        if ($result) {
+            $row = $result->fetch_row();
+            $mask = (1 << $section);
+            return ($row[0] & $mask) != 0 ? 1 : 0;
+        } else {
+            return 0;
+        }
+    }
+    
+   
     
     // 8 byte integer to 64 bit array 
     public function unpackLogData($data, $size) {
@@ -570,5 +607,15 @@ function bibleapi($elm, $vars, $ret)  {
 
 
 //$logmgr = new BibleLogMgr();
+/*
+for ($i = 0; $i<66; $i++) {
+    $nchp = $biblebookinfo[$i][1];
+    for ($j = 1; $j <= $nchp; $j++) {
+        $status = $logmgr->getChapterStatusReadingPlan(65, $i+1, $j);
+        $logmgr->updateChapterStatus(7, $i+1, $j, $status);
+    }
+}
+echo "Done";
+*/
 
 //$logmgr->newReadingPlan();

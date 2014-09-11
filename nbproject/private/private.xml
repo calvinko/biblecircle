@@ -4,16 +4,11 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group name="PhpWebApp"/>
         <group name="BibleCircle">
-            <file>file:/Users/ko/NetBeansProjects/biblecircle/userapi.php</file>
-            <file>file:/Users/ko/NetBeansProjects/biblecircle/bibleutil.js</file>
-            <file>file:/Users/ko/NetBeansProjects/biblecircle/signin.php</file>
             <file>file:/Users/ko/NetBeansProjects/biblecircle/index.html</file>
-            <file>file:/Users/ko/NetBeansProjects/biblecircle/authutil.php</file>
-            <file>file:/Users/ko/NetBeansProjects/biblecircle/bcsignup.php</file>
-            <file>file:/Users/ko/NetBeansProjects/biblecircle/bcsignin.php</file>
-            <file>file:/Users/ko/NetBeansProjects/biblecircle/userauth.php</file>
-            <file>file:/Users/ko/NetBeansProjects/biblecircle/bibleutil.php</file>
+            <file>file:/Users/ko/NetBeansProjects/biblecircle/css/bootstrap-theme.css</file>
             <file>file:/Users/ko/NetBeansProjects/biblecircle/index.php</file>
+            <file>file:/Users/ko/NetBeansProjects/biblecircle/css/bootstrap.css</file>
+            <file>file:/Users/ko/NetBeansProjects/biblecircle/css/bootstrap-gplus.css</file>
         </group>
     </open-files>
 </project-private>

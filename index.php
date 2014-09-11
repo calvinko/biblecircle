@@ -36,12 +36,14 @@
     } 
     
     $todaystr = date("Y-m-d");
+    $utheme = 'default';
     
     if ($userid != 0) {
         $userprofile = getUserProfile($userid);
         $usertype = $userprofile['type'];
         $username = $userprofile['username'];
         $uname = $userprofile['firstname'] . ' ' . $userprofile['lastname'];
+        $utheme = $userprofile['theme'];
         if ($usertype == 'user') {
             $instid = getUserCurrentPlan($userid);
         } else {
@@ -50,6 +52,7 @@
     } else {
         $usertype = 'null';
     }
+    $themefile = "bootstrap" . '-' . $utheme;
     
     
     
@@ -61,12 +64,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8">
     <!-- Bootstrap -->
-    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
-    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css" rel="stylesheet" >
+    <link href="css/<?php echo $themefile; ?>" rel="stylesheet" >
     <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
     <link href="css/bcstyle.css" rel="stylesheet">
     
     <script src="//code.jquery.com/jquery.js"></script>
-    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
     <script src="bibleutil.js"></script>
 </head>
+<body>
+    
+</body>

@@ -54,3 +54,7 @@ THE SOFTWARE.
     border-width: 15px;
     border-radius: 10px;
 }
+
+.nb-table tr td {
+    padding: 8px;
+}
