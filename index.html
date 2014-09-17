@@ -54,7 +54,7 @@ THE SOFTWARE.
         }
         
         .panel-bible {
-            height: 740px;
+            
             
             background-image: linear-gradient(to bottom, #f8f8f8 0%, #fefefe 100%);
             background-repeat: repeat-x;
@@ -227,6 +227,55 @@ THE SOFTWARE.
             color: #eee;
         }
         
+        .statuspanel {
+            margin-top: 10px;
+            height: 630px; 
+            overflow-y: scroll; 
+            transition: height 2s;
+        }
+        
+        .cboxrow {
+            margin-top: 10px;
+        }
+        
+        .cboxrow span {
+            
+            float: left;
+            width: 16px;
+            height: 16px;
+            line-height: 14px;
+
+            border: 1px solid #bbb;
+            text-align: center;
+            font-size:12px;
+            font-family:  'arial', Charcoal, sans-serif;
+            
+            cursor: pointer;
+            color: graytext;
+        }
+        
+        .cboxrow span:hover {
+            background-color: #ddd;
+        }
+        
+        .cboxrow span.loading {
+            color: black;
+            border: 1px solid #222;
+            background-image: url("/images/loading-sm.gif");
+            background-position: 50% 80%; 
+            background-repeat: no-repeat;
+        }
+        
+        .cboxrow span.boxchecked {
+            color: black;
+            border: 1px solid #222;
+            background-image: url("/images/checkmark12.png");
+            background-position: 50% 80%; 
+            background-repeat: no-repeat;
+        }
+        
+        
+        
         .brow {
             padding-left: 18px;
         }
@@ -257,8 +306,16 @@ THE SOFTWARE.
             background-image: url("/images/checkmark12.png");
             background-position: 65% 90%; 
             background-repeat: no-repeat;
-               
         }
+        
+        .brow li.loading {
+            color: black;
+            border: 1px solid #222;
+            background-image: url("/images/loading-sm.gif");
+            background-position: 65% 90%; 
+            background-repeat: no-repeat;
+        }
+        
         
         .biblemenutitle {
             font-size: 16px;
@@ -333,7 +390,7 @@ THE SOFTWARE.
         
         var bibleReader = {
             version: 'NET',
-            activerange: [40, 66],
+            activerange: [1, 66],
             plantitle: "Whole Bible",
             scope: "WholeBible",
             book: 1,
@@ -354,10 +411,19 @@ THE SOFTWARE.
                 });
             },
             displaycheckbox: function(booknum, chapter) {
+                var instidstr = this.planinstid.toString();   
+                $("singleviewpan .cboxrow").empty();
                 if (this.planinstid !== 0) {
-                    $.getJSON("/api/plan/" + instidstr + "/" + booknum + "/" + chapter, {getdata: "status"},
+                    $.getJSON("/api/plan/" + instidstr + "/" + booknum + "/" + chapter, {filter: "status"},
                         function(retobj) {
-                            $("#singleviewpane .textboxfooter").html("");
+                            $("#singleviewpane .cboxrow").html("<span></span> &nbsp &nbsp Chapter Done");
+                            if (retobj.status === 1) {
+                                $("#singleviewpane .cboxrow span").addClass("boxchecked");
+                            };
+                            $("#singleviewpane .text-container .cboxrow span").click(function () {
+                                bibleReader.togglechapterdonebox($(this), booknum, chapter);
+                            })
+                            
                         }
                     )
                 };       
@@ -368,6 +434,7 @@ THE SOFTWARE.
                 var bkname = biblebooklist[booknum][0];
                 $("#singleviewpane .bookname span").text(bkname + " " + chapter);
                 bstore.fetchChapterCallBack(this.version, booknum, chapter, this.displaytext);
+                this.displaycheckbox(booknum, chapter);
                     
             },
             changeversion: function(ver) {
@@ -424,28 +491,30 @@ THE SOFTWARE.
                 }
             },
             hidestatuspanel: function() {
-                
-                $("#singleviewpane .textbox").show();
+                this.displaychapter(this.book, this.chapter);
+                $("#singleviewpane .text-container").show();
                 $("#singleviewpane .statuspanel").hide();
             },
             showstatuspanel: function() {
-                $("#singleviewpane .textbox").hide();
+                
                 
                 $("#singleviewpane .statuspanel span.startdate").text(this.startdate);
                 $("#singleviewpane .statuspanel .plangoal").text(this.plantitle);
                 
                 if ( ! $("#singleviewpane .statuspanel .msheet").length ) {
-                    
+                    var total = 0, done = 0;
                     $("#singleviewpane .statuspanel .status").empty();
                     $.each(this.statustable, function(index, bkrows) {
                         /* statistable is a associate array, index is the key, which is string, not 1,2,3,4 */
                         var bname = biblebooklist[index][0];
                         var ul = $("<ul class='brow'></ul>");
                         $.each(bkrows, function(ind, val) {
+                            total = total + 1;
                             var i = ind + 1;
                             var li = $("<li class='chbox' data-toggle='tooltip' data-title='Click to Mark; Double Click jump to Chapter'>" + i + "</li>");
                             if (val === 1) {
                                 li.addClass("boxchecked");
+                                done = done + 1;
                             }
                             li.click(function() {
                                 var box = $(this);
@@ -465,13 +534,15 @@ THE SOFTWARE.
                         $(".chbox").tooltip({delay: 1000});
                         $("#singleviewpane .statuspanel .status").append(div);
                     });
-                    
+                    this.donechapter = done;
+                    this.totalchapter = total;
                     var percentage = Math.round(this.donechapter * 100 / this.totalchapter);
                     $("#status-progress .complete").html(percentage + "% Completed (" + this.donechapter + "/" + this.totalchapter + ")");
                     $("#status-progress .progress-bar").attr("aria-valuenow", ' ' + percentage);
                     $("#status-progress .progress-bar").css("width", percentage + '%');   
                     
                 };
+                $("#singleviewpane .text-container").hide();
                 $("#singleviewpane .statuspanel").show();
                 
             },
@@ -490,14 +561,41 @@ THE SOFTWARE.
                 } else {
                     val = "1";
                 }
+                box.addClass("loading");
+                $.post("/api/plan/" + instidstr + "/" + day + "/" + section + "/", {status: val}, function(data) {
+                    var retobj = $.parseJSON(data);
+                    var daystr = day.toString();
+                    box.removeClass("loading");
+                    if (retobj.chpstatus === 1) {                 
+                        box.addClass("boxchecked");
+                        bibleReader.statustable[daystr][section-1] = 1;
+                    } else {
+                        
+                        bibleReader.statustable[daystr][section-1] = 0;
+                    }
+                });
+            },
+            togglechapterdonebox: function(box, day, section) {  /* day-book, section-chapter */
+             
+                var instidstr = this.planinstid.toString();   
+                if (box.hasClass("boxchecked")) {
+                    box.removeClass("boxchecked");
+                    val = "0";
+                } else {
+                    val = "1";
+                }
+                box.addClass("loading");
                 $.post("/api/plan/" + instidstr + "/" + day + "/" + section, {status: val}, function(data) {
                     var retobj = $.parseJSON(data);
-                    if (retobj.chpstatus == 1) {
-                        
+                    var daystr = day.toString();
+                    box.removeClass("loading");
+                    if (retobj.chpstatus === 1) {                 
                         box.addClass("boxchecked");
+                        bibleReader.statustable[daystr][section-1] = 1;
                     } else {
-                        box.removeClass("boxchecked");
+                        bibleReader.statustable[daystr][section-1] = 0;
                     }
+                    $("#singleviewpane .statuspanel .status").empty();
                 });
             }
             
@@ -507,7 +605,7 @@ THE SOFTWARE.
         $(function() {      
             
             initLoginUser();
-            bibleReader.displaychapter(40, 1); 
+            bibleReader.loadcurrentchapter();
             bibleReader.loadstatus();
             $("#nav-version a").click(function(e) {
                 var vname = $(this).parent().attr("bvname");
@@ -538,6 +636,8 @@ THE SOFTWARE.
                                 bibleReader.switchchapter(bookid, ch);
                                 $("#bibleindex-dropdown div.biblemenuheader").hide();
                                 $("#bibleindex-dropdown").dropdown('toggle')
+                                $("#singleviewpane .text-container").show();
+                                $("#singleviewpane .statuspanel").hide();
                                 e.stopPropagation();
                             });
                             $("#bibleindex-dropdown ul.brow").append(cli);
@@ -578,7 +678,7 @@ THE SOFTWARE.
                 bibleReader.loadprevbook();
             });
 
-             $("#btn-status").click(function() {
+             $("#btn-status").click(function(e) {
                 
                 
                 if ($("#singleviewpane .statuspanel").css("display") === "none") {
@@ -616,7 +716,7 @@ THE SOFTWARE.
                             <span class="icon-bar"></span>
                             <span class="icon-bar"></span>
                     </button>
-                    <a style="padding: 13px 15px" class="navbar-brand" href="index.html">
+                    <a style="padding: 13px 15px" class="navbar-brand" href="/">
                         <i class="fa fa-dot-circle-o"></i>
                         <span>Bible Circle</span>
                         <span style="font-size: 12px; font-family: '21st Century', fantasy">(beta)</span>
@@ -691,7 +791,7 @@ THE SOFTWARE.
                             <li id="nav-login" class="hide"><a href="/signin.php" class="ktooltip" data-toggle="tooltip" title="Sign In">Sign In</a></li>
                         </ul> 
                     </div><!--/.navbar-collapse -->	
-
+  
                 </div>
 
             
@@ -699,11 +799,11 @@ THE SOFTWARE.
             </div>
         </header>
     
-    <div class="container">
+    <div class="container-full">  
         <div style="padding-top: 7px" class="row">
-            <div style="font-size: 13px; line-height: 15px; float: left; height: 700px" id="singleviewpane" class="col-xs-12 col-sm-12 col-md-8 col-lg-8">
+            <div style="font-size: 13px; line-height: 15px; float: left;" id="singleviewpane" class="col-xs-12 col-sm-12 col-md-8 col-lg-8">
                     <div class="panel panel-default panel-bible">
-                        <div class="panel-body">
+                        <div style="padding: 7xp 10px;" class="panel-heading">
                             <div class="biblepanelheader">
                                 <div class="btn-group">
                                     <button id ="btn-incfont" class="btn btn-default"><i class="fa fa-search-plus"></i></button>
@@ -747,8 +847,18 @@ THE SOFTWARE.
                                     </div>
                                 </div>
                             </div>
-                            <div style="height: 650px; padding: 5px 8px; margin-top: 15px; overflow-y: scroll;" class="textbox"></div>
-                            <div style="height: 630px; overflow-y: scroll; display:none" class="statuspanel">
+                        </div>
+                        <div class="panel-body">
+                      
+                            <div style="padding: 5px 8px; margin-top: 15px; min-height: 600px" class="text-container">
+                                <div class="textbox">
+                                    
+                                </div>
+                                <div class="cboxrow">
+                                    <span></span>  &nbsp &nbsp Chapter Done
+                                </div>
+                            </div>
+                            <div style="display:none" class="statuspanel">
                                     <div style="padding-right: 12px" class="summary-row col-md-12">
                                         <table style="font-size: 90%;" class="table table-striped">
                                             <tr><th width="140px">Goal</th><td class="goaltd"><div class="plangoal pull-left">New Testament</div>

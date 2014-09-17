@@ -430,17 +430,7 @@ class BibleLogMgr {
         return $this;
     }
     
-    // pack the reading log from array(bookid, array of bool status) into 
-    public function packLog($rlogbook) {
-        
-    }
-    
-    // expand the reading log 
-    public function unpackLog($prlog) {
-        
-    }
-    
-    public function convertToLoc($booknum, $chnum) {
+    function convertToLoc($booknum, $chnum) {
         if ($booknum == 19)  {
             if ($chnum <= 60) {
                 return [19, $chnum];
@@ -528,16 +518,62 @@ class BibleLogMgr {
         }
     }
     
-   
-    
     // 8 byte integer to 64 bit array 
-    public function unpackLogData($data, $size) {
+    function unpackLogData($data, $size) {
         $mask = 1;
         for ($i=0; $i<$size; $i++) {
             $ret[$i] = ($data & $mask) != 0 ? 1 : 0;
             $mask = $mask << 1;
         } 
         return $ret;
+    }
+    
+    public function getDataFromBlknum($instid, $blknum) {
+        $result = $this->mysqli->query("SELECT data from biblerlog WHERE instid=$instid and blknum=$blknum");
+        if ($result) {
+            $row = $result->fetch_row();
+            return $row;
+        } else {
+            throw new Exception("sql error");
+        }
+    }
+    
+    public function getBookChapterStatus($instid, $booknum) {
+        global $biblebookinfo;
+        if ($booknum >= 1 && $booknum <=66) {
+            $numchp = $biblebookinfo[$booknum-1][1]; 
+            if ($booknum == 19) {
+                $statustbl = $this->unpackLogData($this->getDataFromBlknum($instid, 19), 60);
+                $data = $this->getDataFromBlknum($instid, 67);
+                $mask = 1;
+                for ($i=0; $i<60; $i++) {
+                    
+                    $statustbl[60+$i] = ($data & $mask) != 0 ? 1 : 0;
+                    $mask = $mask << 1;
+                }
+                $data1 = $this->getDataFromBlknum($instid, 68);
+                $mask = 1;
+                for ($i=0; $i<30; $i++) {
+                    $statustbl[120+$i] = ($data1 & $mask) != 0 ? 1 : 0;
+                    $mask = $mask << 1;
+                }
+                return $statustbl;
+            } else if ($booknum == 23) {
+                $statustbl = $this->unpackLogData($this->getDataFromBlknum($instid, 19), 60);
+                $data = $this->getDataFromBlknum($instid, 69);
+                $mask = 1;
+                for ($i=0; $i<6; $i++) {
+                    $statustbl[60+$i] = ($data & $mask) != 0 ? 1 : 0;
+                    $mask = $mask << 1;
+                }
+                return $statustbl;
+            } else { /* all other cases */
+                $data = $this->getDataFromBlknum($instid, $booknum); 
+                return $this->unpackLogData($data, $numchp);
+            }
+        } else {
+            throw new Exception("Invalid booknum");
+        }
     }
     
     public function getAllChapterStatus($instid) {

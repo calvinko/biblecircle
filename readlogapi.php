@@ -76,31 +76,42 @@ if ($rmethod == 'GET') {
             $ret['statustable'] = $statusarray;
             echo json_encode($ret);
             exit();
-        } else if (is_integer($day)) {
+        } else if (is_numeric($day)) {
             $book = intval($day);
-            if ($arg[4] != NULL && is_int($arg[4])) {
+            if ($arg[4] != NULL && is_numeric($arg[4])) {
                 $chapter = intval($arg[4]);
                 if (filter_has_var(INPUT_GET, "filter")) {
                     $filter = filter_input(INPUT_GET, "filter", FILTER_DEFAULT);
                     if ($filter == "all") {
-                        
+                        $status = $logmgr->getChapterStatus($instid, $book, $chapter);
+                        $ret['_status'] = 'success';
+                        $ret['status'] = $status;
                     } else if ($filter == 'status') {
                         $status = $logmgr->getChapterStatus($instid, $book, $chapter);
                         $ret['_status'] = 'success';
                         $ret['status'] = $status;
                     } else if ($filter == 'desc') {
                         
+                    } else {
+                        $ret['_status'] = 'failure';
+                        
                     }
                 } else {
                     $status = $logmgr->getChapterStatus($instid, $book, $chapter);
                     $ret['_status'] = 'success';
                     $ret['status'] = $status;
-                };
+                }
                 echo json_encode($ret);
                 exit(0);
+            } else {
+                $statusarray = $logmgr->getBookChapterStatus($instid, $book);
+                $ret['_status'] = 'success';
+                $ret['statustable'] = $statusarray;
+                echo json_encode($ret);
+                return;
             }
         } else {
-            echo "method is $rmethod";
+            echo "Method is $rmethod, day is $day";
         }
     } catch(Exception $e) {
         $ret['_status'] = 'failure';
