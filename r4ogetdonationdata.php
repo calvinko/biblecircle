@@ -24,33 +24,48 @@
  * THE SOFTWARE.
  */
 
+define('DB_NAME', 'dbko1');
 
-require_once("authutil.php");
-require_once("bcutil.php");
+/** MySQL database username */
+define('DB_USER', 'dbko1');
 
-initmysqli();
+/** MySQL database password */
+define('DB_PASSWORD', 'Spart@123');
 
-$astatus = Authenticate::validateAuthCookie();
-if ($astatus) {
-    $userid = Authenticate::getUserId();
-} 
+/** MySQL hostname */
+define('DB_HOST', 'dbko1.db.3694379.hostedresource.com');
 
-if ($userid != 0) {
-    $sql = "SELECT * from miscuserdata WHERE userid=$userid and fieldname='shoegoal2014'";
+/** Database Charset to use in creating database tables. */
+define('DB_CHARSET', 'utf8');
+
+$mysqli = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+$mysqli->query("SET NAMES 'utf8'");
+
+
+
+$sql = "SELECT * from donation";
+
+$allow = 1;
+
+if ($allow) {  
+    
+    if (isset($_GET['runnerid'])) {
+        $runnerid = $_GET['runnerid'];
+    } else {
+        $runnerid = 0;
+    }
+    
+    if ($runnerid == 0) {
+        $sql = "SELECT * from donation ORDER BY date";
+    } else {
+        $sql = "SELECT * from donation WHERE runnerid=$runnerid ORDER BY date";
+    }
     $result = $mysqli->query($sql);
     if ($result) {
-        $row = $result->fetch_assoc();
-        if ($row) {
-            $ret['goal'] = $row['fieldvalue'];
-            $ret['gstatus'] = "0";
-        } else {
-            $ret['goal'] = "";
-            $ret['gstatus'] = "0";
+        while ($row = $result->fetch_assoc()) {
+            $ret[] = $row;
         }
-    } else {
-        $ret["_status"] = 3;
+        echo json_encode($ret);
     }
-} else {
-    $ret["_status"] = 0;
 }
-echo json_encode($ret);
+    

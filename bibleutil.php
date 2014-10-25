@@ -406,11 +406,20 @@ function getChapterText($book, $chapter, $version) {
     }
     if (strtoupper($version) == 'CUV') {
         $texttbl = 'hb5text';
+        
+    } else if (strtoupper($version) == 'ESV') {
+        $passage = getBookName($booknum, "KJV") . "+" . $chapter;
+        $rows[0]["verse"] = "htmltext";
+        $rows[0]["text"] = getTextESV($passage);
+        return $rows;
     } else {
         $texttbl = 'kjvtext';
-    }
+    };
+    
     $result = $mysqli->query("SELECT book,chapter,verse,text FROM $texttbl WHERE book=$booknum and chapter=$chapter ORDER BY chapter, verse");
     if ($result) {
+        $data[0]['verse'] = "chaptertitle";
+        $data[0]['text'] = getBookName($booknum, $version) . " $chapter";
         while ($row = $result->fetch_assoc()) {
             $data[] = $row;
         }

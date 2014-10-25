@@ -30,7 +30,7 @@ THE SOFTWARE.
     <!-- Bootstrap -->
    
     <link href="css/bootstrap-yeti.css" rel="stylesheet" >
-    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.css" rel="stylesheet">
     <link href="css/bcstyle.css" rel="stylesheet">
     
     <script src="//code.jquery.com/jquery.js"></script>
@@ -54,16 +54,14 @@ THE SOFTWARE.
         }
         
         .panel-bible {
-            
-            
-            background-image: linear-gradient(to bottom, #f8f8f8 0%, #fefefe 100%);
+            //background-image: linear-gradient(to bottom, #f8f8f8 0%, #fefefe 100%);
             background-repeat: repeat-x;
-            border: 1px solid #aaaaaa;
-            
-            bbox-shadow: 0 0 6px 6px #D4AF37;  
+            border: none;
             margin-left: auto;
             margin-right: auto;
+            margin-bottom: 0px;
             padding: 0px;
+            box-shadow: none;
         }
         
         .panel-body-round {
@@ -71,6 +69,15 @@ THE SOFTWARE.
             opacity: 1.0;
             border: 0px black solid;
             border-radius: 8px;
+        }
+        
+        .panel-body {
+            padding: 5px 15px;
+        }
+        
+        .text-container {
+            padding: 0px 8px 8px 8px; 
+            min-height: 600px;
         }
         
         .panel-status {
@@ -92,7 +99,19 @@ THE SOFTWARE.
             padding: 5px 10px;
         }
         
-        h3, h4, h5 {
+        .textbox h2 {
+            font-size: 140%;
+        }
+        
+        .textbox h3 {
+            font-size: 130%;
+        }
+        
+        .textbox h4 {
+            font-size: 120%;
+        }
+        
+        h4.title {
             border: 0 solid #efefef;
             border-bottom-width: 1px;
             padding-bottom: 10px;
@@ -347,7 +366,7 @@ THE SOFTWARE.
                     return;
                 } else {
                     var refString = version + '-' + parseInt(booknum) + ':' + parseInt(chapter);
-                    if (version === "CUV" || version === "KJV") {
+                    if (version === "CUV" || version === "KJV" || version == "ESV") {
                         $.getJSON("/api/bible/" + booknum + "/" + chapter, {version: version}, function(robj) {
                             
                             localstore[refString] = robj.rows;
@@ -359,7 +378,8 @@ THE SOFTWARE.
                         bpassage = bname + ' ' + parseInt(chapter);
                         $.getJSON("//labs.bible.org/api/?callback=?", {passage: bpassage, type: "json"}, 
                             function(robj) {
-                                
+                                var row = {verse: "chaptertitle", text: bpassage};
+                                robj.unshift(row);
                                 localstore[refString] = robj;
                                 cbfunc(robj);
                                 
@@ -390,6 +410,7 @@ THE SOFTWARE.
         
         var bibleReader = {
             version: 'NET',
+            version2: 'CUV',
             activerange: [1, 66],
             plantitle: "Whole Bible",
             scope: "WholeBible",
@@ -401,12 +422,29 @@ THE SOFTWARE.
             totalchapter: 1000,
             donechapter: 100,
             linestyle: "singleline",
-            displaytext: function(rows) {
+            mode: "single",
+            alignviewpanelheight: function() {
+                var l1 = $("#singleviewpane .textbox").height();
+                var l2 = $("#viewpane2 .textbox").height();
+                if (l1 > l2) {
+                    //$("#viewpane2 .textbox").height(l1);
+                } else {
+                    //$("#singleviewpane .textbox").height(l2);
+                }
+            },
+            displaytext: function(rows, linestyle, viewpanel) {
+                viewpanel.find(".textbox").empty();
                 $.each(rows, function(index, rec) {
-                    if (bibleReader.linestyle === "singleline") {
-                        $("#singleviewpane .textbox").append(rec.verse + '. ' + rec.text + "<br/>");
+                    if (rec.verse === "chaptertitle") {
+                        viewpanel.find(".textbox").append("<h3>" + rec.text + "</h3>");
+                    } else if (rec.verse === "htmltext") {
+                        viewpanel.find(".textbox").append(rec.text);
                     } else {
-                        $("#singleviewpane .textbox").append(rec.verse + '. ' + rec.text);
+                        if (linestyle === "singleline") {
+                            viewpanel.find(".textbox").append(rec.verse + '&nbsp' + rec.text + "<br/>");
+                        } else {
+                            viewpanel.find(".textbox").append(rec.verse + '&nbsp' + rec.text);
+                        }
                     }
                 });
             },
@@ -427,25 +465,46 @@ THE SOFTWARE.
                         }
                     )
                 };       
-               
+                 
             },
             displaychapter: function(booknum, chapter) {
-                $("#singleviewpane .textbox").empty();
+                
                 var bkname = biblebooklist[booknum][0];
                 $("#singleviewpane .bookname span").text(bkname + " " + chapter);
-                bstore.fetchChapterCallBack(this.version, booknum, chapter, this.displaytext);
+                bstore.fetchChapterCallBack(this.version, booknum, chapter, 
+                    function(rows) {
+                        bibleReader.displaytext(rows, bibleReader.linestyle, $("#singleviewpane"));
+                    }
+                );
                 this.displaycheckbox(booknum, chapter);
                     
+            },
+            displaychapterpanel2: function(booknum, chapter) {
+                
+                var bkname = biblebooklist[booknum][0];
+                $("#viewpane2 .bookname span").text(bkname + " " + chapter);
+                bstore.fetchChapterCallBack(this.version2, booknum, chapter, 
+                    function(rows) {
+                        bibleReader.displaytext(rows, bibleReader.linestyle, $("#viewpane2"));
+                        
+                    }
+                );
             },
             changeversion: function(ver) {
                 this.version = ver;
                 $("#btn-versiontext").text(ver);
                 this.displaychapter(this.book, this.chapter);
             },
+            changeversion2: function(ver) {
+                this.version2 = ver;
+                $("#btn-versiontext2").text(ver);
+                this.displaychapterpanel2(this.book, this.chapter);
+            },
             switchchapter: function(bnum, ch) {
                     this.book = bnum;
                     this.chapter = ch;
                     this.displaychapter(bnum, ch);
+                    this.displaychapterpanel2(bnum, ch);
                     var bookname = biblebooklist[bnum][0];
                     $("#bibleindex input").val(bookname + " " + ch);         
            },
@@ -489,6 +548,33 @@ THE SOFTWARE.
                     this.chapter = 1;
                     this.switchchapter(this.book, this.chapter);
                 }
+            },
+            switchtoonepane: function () {
+                $("#singleviewpane").removeClass("col-md-6");
+                $("#singleviewpane").removeClass("col-lg-6");
+                $("#singleviewpane").addClass("col-md-12");
+                $("#singleviewpane").addClass("col-lg-12");
+                $("#mainviewpanel").removeClass("col-md-12");
+                $("#mainviewpanel").removeClass("col-lg-12");
+                $("#mainviewpanel").addClass("col-md-8");
+                $("#mainviewpanel").addClass("col-lg-8");
+                $("#viewpane2").hide();
+                $("#right-column").show();
+                
+            },
+            switchtotwopane: function () {
+                $("#singleviewpane").removeClass("col-md-12");
+                $("#singleviewpane").removeClass("col-lg-12");
+                $("#singleviewpane").addClass("col-md-6");
+                $("#singleviewpane").addClass("col-lg-6");
+                $("#mainviewpanel").removeClass("col-md-8");
+                $("#mainviewpanel").removeClass("col-lg-8");
+                $("#mainviewpanel").addClass("col-md-12");
+                $("#mainviewpanel").addClass("col-lg-12");
+                
+                $("#right-column").hide();
+                this.displaychapterpanel2(this.book, this.chapter);
+                $("#viewpane2").show();  
             },
             hidestatuspanel: function() {
                 this.displaychapter(this.book, this.chapter);
@@ -553,6 +639,28 @@ THE SOFTWARE.
                     
                 });
             },
+            decfontsize: function() {
+                var fontSize = $("#singleviewpane .textbox").css('font-size').split('px')[0];
+                var fontInt = parseInt(fontSize) - 1;
+                if (fontInt > 10) {
+                    var lineHeight = fontInt + 4;
+                    fontSize = fontInt + 'px';
+                    $("#singleviewpane .textbox, #viewpane2 .textbox").css('font-size', fontSize);
+                    $("#singleviewpane .textbox, #viewpane2 .textbox").css('line-height', lineHeight + 'px');
+                    $("#btn-fontsize").val(fontInt);    
+                };
+            },
+            incfontsize: function() {
+                var fontSize = $("#singleviewpane .textbox").css('font-size').split('px')[0];
+                var fontInt = parseInt(fontSize) + 1;
+                if (fontInt < 30) {
+                    var lineHeight = fontInt + 4;
+                    fontSize = fontInt + 'px';
+                    $("#singleviewpane .textbox, #viewpane2 .textbox").css('font-size', fontSize);
+                    $("#singleviewpane .textbox, #viewpane2 .textbox").css('line-height', lineHeight + 'px');
+                    $("#btn-fontsize").val(fontInt);      
+                }
+            },
             togglestatusdonebox: function(box, day, section) {  /* day-book, section-chapter 8*/
                 var instidstr = this.planinstid.toString();   
                 if (box.hasClass("boxchecked")) {
@@ -607,11 +715,17 @@ THE SOFTWARE.
             initLoginUser();
             bibleReader.loadcurrentchapter();
             bibleReader.loadstatus();
+            
             $("#nav-version a").click(function(e) {
                 var vname = $(this).parent().attr("bvname");
                 bibleReader.changeversion(vname);
             });
     
+            $("#nav-version2 a").click(function(e) {
+                var vname = $(this).parent().attr("bvname");
+                bibleReader.changeversion2(vname);
+            });
+            
             createBibleIndexMenu($("#bibleindex-dropdown div.smbox"));
             
             $("#bibleindex-dropdown ul li").attr("chapter", "1");
@@ -678,12 +792,36 @@ THE SOFTWARE.
                 bibleReader.loadprevbook();
             });
 
-             $("#btn-status").click(function(e) {
+            $("#btn-twocolumn").click(function(e) {
+                if ($(this).hasClass("active")) {
+                    $(this).removeClass("active");
+                } else {
+                    $(this).addClass("active");
+                }
+                bibleReader.switchtotwopane();
+            });
+
+            $("#btn-closepanel2").click(function(e) {
+                bibleReader.switchtoonepane();
+            });
+            
+            $("#btn-incfont").click(function(e) {
+                bibleReader.incfontsize();
+                e.stopPropagation();
+                return(false);
+            });
+            
+             $("#btn-decfont").click(function(e) {
+                bibleReader.decfontsize();
+                e.stopPropagation();
+                return(false);
+            });
+
+            $("#btn-status").click(function(e) {
                 
                 
                 if ($("#singleviewpane .statuspanel").css("display") === "none") {
                     bibleReader.showstatuspanel();
-                    
                 } else {
                     //$("#singleviewpane .textbox").show();
                     //$("#singleviewpane .statuspanel").hide();
@@ -799,16 +937,30 @@ THE SOFTWARE.
             </div>
         </header>
     
-    <div class="container-full">  
+    <div class="container">  
         <div style="padding-top: 7px" class="row">
-            <div style="font-size: 13px; line-height: 15px; float: left;" id="singleviewpane" class="col-xs-12 col-sm-12 col-md-8 col-lg-8">
-                    <div class="panel panel-default panel-bible">
-                        <div style="padding: 7xp 10px;" class="panel-heading">
+            <div style="padding: 0px; border-color: #aaaaaa" id="mainviewpanel" class="col-sm-12 col-md-8 col-lg-8 panel">
+            <div style="font-size: 13px; line-height: 15px; float: left; padding: 0px;" id="singleviewpane" class="col-md-12 col-lg-12">
+                    <div style="border-right: 1px solid #ddd;" class="panel panel-default panel-bible">
+                        <div style="padding: 5px 10px;" class="panel-heading">
                             <div class="biblepanelheader">
                                 <div class="btn-group">
-                                    <button id ="btn-incfont" class="btn btn-default"><i class="fa fa-search-plus"></i></button>
-                                    <button id ="btn-decfont" class="btn btn-default"><i class="fa fa-search-minus"></i></button>
+                                    <button id ="btn-setfont" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><i class="fa fa-font"></i></button>
+                                    <ul class="dropdown-menu">
+                                       
+                                        <li style="padding: 10px">
+                                            <div class="btn-group">
+                                            <button id="btn-incfont" class="btn btn-primary"><i class="fa fa-plus"></i></button>
+                                            
+                                            <input id="btn-fontsize" style="width: 72px" class="btn btn-info" disabled type="button" value="14">
+                                            
+                                            <button id="btn-decfont" class="btn btn-primary"><i class="fa fa-minus"></i></button>
+                                            </div>
+                                        </li>
+                                        
+                                    </ul>
                                     <button id ="btn-status" class="btn btn-default"><i class="fa fa-list"></i></button>
+                                    <a id ="btn-twocolumn" class="btn btn-default"><i class="fa fa-columns"></i></a>
                                 </div>
                                 <div class="btn-group">
                                     <button id="btn-prevbook" class="btn btn-default"><i class="fa fa-angle-double-left"></i></button>
@@ -849,10 +1001,8 @@ THE SOFTWARE.
                             </div>
                         </div>
                         <div class="panel-body">
-                      
-                            <div style="padding: 5px 8px; margin-top: 15px; min-height: 600px" class="text-container">
-                                <div class="textbox">
-                                    
+                            <div class="text-container">
+                                <div style="font-size: 14px; line-height: 18px" class="textbox">
                                 </div>
                                 <div class="cboxrow">
                                     <span></span>  &nbsp &nbsp Chapter Done
@@ -886,28 +1036,79 @@ THE SOFTWARE.
                         </div>                            
                     </div>
             </div>
-            <div class="col-md-4 col-lg-4">
+            <div style="display:none; font-size: 13px; line-height: 15px; float: left; padding: 0px" id="viewpane2" class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                <div style="border-left: 1px solid #ddd;" class="panel panel-default panel-bible">
+                    <div style="padding: 5px 10px;" class="panel-heading">
+                        <div class="biblepanelheader">
+                            <div class="btn-group">
+                                <button id="btn-bookmark" class="btn btn-default"><i class="fa fa-file-text-o"></i></button>
+                                <button id="btn-library" class="btn btn-default"><i class="fa fa-book"></i></button>
+                                <button id="btn-bcircle" class="btn btn-default"><i class="fa fa-circle-o-notch"></i></button>
+                                
+
+                            </div>
+                            <div class="btn-group">
+                                <button id="btn-versiontext2" style="width:80px" class="btn btn-default" data-toggle="dropdown">CUV</button>
+                                <a class="btn btn-default dropdown-toggle" data-toggle="dropdown"><i class="fa fa-caret-down"></i></a>             
+                                <ul id="nav-version2" class="dropdown-menu">
+                                    <li bvname="KJV"><a href="#">KJV - King James Version</a></li>
+                                    <li bvname="ESV"><a href="#">ESV - English Standard Version</a></li>
+                                    <li bvname="NET"><a href="#">NET - New English Version</a></li>
+                                    <li bvname="CUV"><a href="#">和合本 - Chinese Union Version</a></li>
+                                </ul>
+                            </div>
+                             <button id="btn-closepanel2" class="btn btn-default pull-right"><i class="fa fa-times"></i></button>
+                        </div>    
+                    </div>
+                    <div class="panel-body">
+                      
+                        <div class="text-container">
+                            <div style="font-size: 14px; line-height: 18px" class="textbox"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+            <div id="right-column" class="col-sm-6 col-xs-8 col-md-4 col-lg-4">
+                <div style="height: 350px; margin-bottom: 20px;">
+                <script charset="utf-8" type="text/javascript">
+                amzn_assoc_ad_type = "responsive_search_widget";
+                amzn_assoc_tracking_id = "bcircle-20";
+                amzn_assoc_link_id = "TGPFGFB4VG76HSKL";
+                amzn_assoc_marketplace = "amazon";
+                amzn_assoc_region = "US";
+                amzn_assoc_placement = "";
+                amzn_assoc_search_type = "search_widget";
+                amzn_assoc_width = "auto";
+                amzn_assoc_height = "auto";
+                amzn_assoc_default_search_category = "";
+                amzn_assoc_default_search_key = "bible study";
+                amzn_assoc_theme = "light";
+                amzn_assoc_bg_color = "FFFFFF";
+                </script>
+                <script src="//z-na.amazon-adsystem.com/widgets/q?ServiceVersion=20070822&Operation=GetScript&ID=OneJS&WS=1&MarketPlace=US"></script>
+                </div>    
                 <div class="panel">
-                    <div class="panel-heading">
+                    <div style="display: none;" class="panel-heading">
                         <a href="#" style="font-size: 75%" class="pull-right">View all <b class="caret"></b></a>
                         <h5>
                             <i class="fa fa-circle-o"></i>
                             <span>Your Bible Circles</span>
                         </h5>
                     </div>
-                        <div style="height: 300px;" class="panel-body">
-                            
-                        </div>  
+                    <div style="display: none; height: 300px;" class="panel-body">
+
+                    </div>  
                     <div class="panel-heading panel-heading-sm">
                         <div style="padding: 2px 4px;" class="panel-title">
                             <i class="fa fa-circle-o"></i>
                             <span>Your Notes</span>
                         </div>
                     </div>
-                        <div style="height: 400px" class="panel-body">
-                            <h3>Your Stuff</h3>
-                        </div>  
-                    </div>
+                    <div style="height: 200px;" class="panel-body">
+
+                    </div>  
+                </div>
             </div>
         </div>
     </div>

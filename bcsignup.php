@@ -25,7 +25,7 @@
  */
 
 
-require_once "userauth.php";
+#require_once "userauth.php";
 
 $errormsg = array();
 $ret['status'] = 0;
@@ -33,6 +33,7 @@ $ret['status'] = 0;
 function isValidEmailAddress($email) {
     global $errormsg; 
     list($userName, $mailDomain) = split("@", $email);
+    return true;
     if ($mailDomain != "" && $userName !="") {
         if (checkdnsrr($mailDomain, "MX")) {
             return true;

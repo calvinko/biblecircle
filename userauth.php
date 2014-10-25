@@ -164,7 +164,7 @@ class UserManager {
 class AuthException extends Exception {}
 
 try {
-    $auth = new UserManager(100);
+    $auth = new UserManager(1001);
     print_r($auth);
 } catch (Exception $e) {
     echo $e->getMessage();
