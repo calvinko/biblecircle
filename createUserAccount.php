@@ -97,7 +97,7 @@ if ( isset($_POST['email']) && isset($_POST['passwd'])) {
             $ret['sql'] = $sql;
             $ret['status'] = 1; 
             $ret['actcode'] = getactivationcode($email, "$uts");
-            sendActivationEmail($email, $_POST['firstname'], $ret['userid'], $ret['actcode']);
+            //sendActivationEmail($email, $_POST['firstname'], $ret['userid'], $ret['actcode']);
         } else {
             $ret['status'] = 0;
             $errormsg[] = $mysqli->error . $sql;

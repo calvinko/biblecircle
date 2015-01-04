@@ -47,8 +47,30 @@ class UserManager {
     private $profile;
     private $errormsg;
     
+    // It will check username, email exist
+    // return new userManager object
+    public static function createNewUser($username, $email, $passwd) {
+        $mysqli = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+        
+    }
+    
+    public static function createNewUserWithEmail($email) {
+        
+    }
+    
+    private function loadProfileUserid($userid) {
+        $result = $this->mysqli->query("SELECT * FROM " . DB_USERTABLE . " WHERE userid=$userid");
+        if ($result && $result->num_rows > 0) {
+            $this->profile = $result->fetch_assoc();  
+        } else {
+            $this->profile = null;
+            throw new Exception("User:$fieldname not found");
+        }
+        
+    }
+    
     private function loadUserProfile($fieldname, $value) {
-        $result = $this->mysqli->query("SELECT * FROM " . DB_USERTABLE . "WHERE $fieldname=$value");
+        $result = $this->mysqli->query("SELECT * FROM " . DB_USERTABLE . " WHERE $fieldname=$value");
         if ($result && $result->num_rows > 0) {
             $this->profile = $result->fetch_assoc();  
         } else {
@@ -69,7 +91,7 @@ class UserManager {
             throw new Exception("Connection Error");
         }
         if ($userid != 0) {
-            $this->loadUserProfile("userid", $userid);
+            $this->loadProfileUserid($userid);
         } else if ($username != '') {
             $this->loadUserProfile("username", $username);
         } else if ($authcookie != '') {
@@ -165,6 +187,7 @@ class AuthException extends Exception {}
 
 try {
     $auth = new UserManager(1001);
+    echo "UserManager";
     print_r($auth);
 } catch (Exception $e) {
     echo $e->getMessage();

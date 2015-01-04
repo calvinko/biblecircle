@@ -53,6 +53,9 @@ if ($result) {
  * 
  */
 
-$bmgr = new BibleLogMgr();
+$logmgr = new BibleLogMgr();
+
+
+$logmgr->newReadingPlan(11);
 
 

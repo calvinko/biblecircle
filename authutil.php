@@ -110,11 +110,21 @@ class Authenticate {
 
     protected $username, $userid;
             
-    public function __construct( $username ) { 
-     
-        $this->$username = $username;
+    public static function getUserId() { 
         
-         
+        list( $id, $expiration, $hmac ) = explode( '|', $_COOKIE[COOKIE_AUTH] ); 
+        return $id; 
+
+    } 
+    
+    public static function logOut( ) { 
+
+        setcookie( COOKIE_AUTH, "", time() - 1209600, COOKIE_PATH, COOKIE_DOMAIN, true, true ); 
+
+    } 
+    
+    public function __construct( $username ) { 
+        $this->$username = $username;
     } 
      
     private function checkpassword($passwd, $hashpasswd) {
@@ -173,12 +183,6 @@ class Authenticate {
         return $cookie; 
     } 
 
-    public static function logOut( ) { 
-
-        setcookie( COOKIE_AUTH, "", time() - 1209600, COOKIE_PATH, COOKIE_DOMAIN, true, true ); 
-
-    } 
-
     public static function validateAuthCookie() { 
 
         if ( empty($_COOKIE[COOKIE_AUTH]) ) 
@@ -200,16 +204,7 @@ class Authenticate {
             return false; 
 
         return true; 
-    } 
-
-    public static function getUserId() { 
-
-        list( $id, $expiration, $hmac ) = explode( '|', $_COOKIE[COOKIE_AUTH] ); 
-
-        return $id; 
-
-    } 
-
+    }     
 } 
 
 class AuthException extends Exception {} 

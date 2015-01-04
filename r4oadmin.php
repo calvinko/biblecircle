@@ -267,6 +267,11 @@ if ($astatus) {
                                     </table>
                                 </div>   
                                 <div id="ptab2" style="height:400px;" class="tab-pane tab-box">
+                                    <div class="col-md-6">
+                                        <select id="runnerselect" class="rlist form-control">
+                                            <option value="0">Select Runner</option>
+                                        </select>
+                                    </div>
                                 </div> 
                                 <div id="ptab3" style="height:300px;" class="tab-pane tab-box">
                                 

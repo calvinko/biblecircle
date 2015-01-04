@@ -398,9 +398,12 @@ THE SOFTWARE.
                 if (userid !== 0) {
                     $("#nav-setting, #nav-user").removeClass("hide");
                     $("#nav-user span.user").text(retobj.firstname + ' ' + retobj.lastname);
-                    
+                    bibleReader.planinstid = parseInt(retobj.curplanid);
+                    bibleReader.loadcurrentchapter();
+                    bibleReader.loadstatus();
                 } else {
                     $("#nav-login, #nav-signup").removeClass("hide");
+                    bibleReader.loadcurrentchapter();
                 }
                 $("#loading-overlay").addClass("hide");
             });
@@ -417,7 +420,7 @@ THE SOFTWARE.
             book: 1,
             chapter: 1,
             startdate: "2014-01-01",
-            planinstid: 7,
+            planinstid: 1,
             statustable: new Array(66),
             totalchapter: 1000,
             donechapter: 100,
@@ -451,10 +454,11 @@ THE SOFTWARE.
             displaycheckbox: function(booknum, chapter) {
                 var instidstr = this.planinstid.toString();   
                 $("singleviewpan .cboxrow").empty();
-                if (this.planinstid !== 0) {
+                if (this.planinstid > 5) {
                     $.getJSON("/api/plan/" + instidstr + "/" + booknum + "/" + chapter, {filter: "status"},
                         function(retobj) {
                             $("#singleviewpane .cboxrow").html("<span></span> &nbsp &nbsp Chapter Done");
+                            $("#singleviewpane .cboxrow").show();
                             if (retobj.status === 1) {
                                 $("#singleviewpane .cboxrow span").addClass("boxchecked");
                             };
@@ -583,7 +587,7 @@ THE SOFTWARE.
             },
             showstatuspanel: function() {
                 
-                
+                if (this.planinstid === 1) return;
                 $("#singleviewpane .statuspanel span.startdate").text(this.startdate);
                 $("#singleviewpane .statuspanel .plangoal").text(this.plantitle);
                 
@@ -713,8 +717,7 @@ THE SOFTWARE.
         $(function() {      
             
             initLoginUser();
-            bibleReader.loadcurrentchapter();
-            bibleReader.loadstatus();
+            
             
             $("#nav-version a").click(function(e) {
                 var vname = $(this).parent().attr("bvname");
@@ -1004,7 +1007,7 @@ THE SOFTWARE.
                             <div class="text-container">
                                 <div style="font-size: 14px; line-height: 18px" class="textbox">
                                 </div>
-                                <div class="cboxrow">
+                                <div style="display:none" class="cboxrow">
                                     <span></span>  &nbsp &nbsp Chapter Done
                                 </div>
                             </div>

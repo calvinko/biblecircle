@@ -618,7 +618,7 @@ class BibleLogMgr {
         }
     }
     
-    public function newReadingPlan() {
+    public function newReadingPlan($instid) {
   
         if (!($stmt = $this->mysqli->prepare("INSERT INTO biblerlog (instid, blknum) VALUES (?, ?)"))) {
             $this->errmsg = "Prepare failed: (" . $this->mysqli->errno . ") " . $this->mysqli->error;
@@ -626,7 +626,6 @@ class BibleLogMgr {
             return 0;
         }
         
-        $instid = 7; 
         for ($i=1;$i<=69;$i++) {
             $stmt->bind_param("ii", $instid, $i);
             $stmt->execute();              
@@ -651,7 +650,7 @@ function bibleapi($elm, $vars, $ret)  {
 } 
 
 
-//$logmgr = new BibleLogMgr();
+#$logmgr = new BibleLogMgr();
 /*
 for ($i = 0; $i<66; $i++) {
     $nchp = $biblebookinfo[$i][1];
@@ -663,4 +662,4 @@ for ($i = 0; $i<66; $i++) {
 echo "Done";
 */
 
-//$logmgr->newReadingPlan();
+#$logmgr->newReadingPlan(10);

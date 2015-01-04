@@ -26,6 +26,9 @@
 
 
 #require_once "userauth.php";
+require_once "authutil.php";
+
+
 
 $errormsg = array();
 $ret['status'] = 0;
@@ -88,6 +91,8 @@ function validicode($code)
     return $code == "3350";
 }
 
+$mysqli = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+$mysqli->query("SET NAMES 'utf8'");
 
 if ( isset($_POST['email']) && isset($_POST['passwd'])) {
     $email = $_POST['email'];
@@ -120,7 +125,7 @@ if ( isset($_POST['email']) && isset($_POST['passwd'])) {
             } else {
                 $ret['status'] = 1;
                 $ret['actcode'] = getactivationcode($email, "$uts");
-                sendActivationEmail($email, $_POST['firstname'], $ret['userid'], $ret['actcode']);
+                //sendActivationEmail($email, $_POST['firstname'], $ret['userid'], $ret['actcode']);
             }
             
         } else {

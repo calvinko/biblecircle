@@ -95,8 +95,8 @@ function getUserProfile($userid) {
         $row = $result->fetch_assoc();
         if ($row) {
             $r1 = $mysqli->query("SELECT `curplanid` from bibleuserdata WHERE userid=$userid");
-            if ($r1 && $result->num_rows > 0) {
-                $row1 = $result->fetch_assoc();
+            if ($r1 && $r1->num_rows > 0) {
+                $row1 = $r1->fetch_assoc();
                 $row['curplanid'] = $row1['curplanid'];
             } else {
                 $row['curplanid'] = '1';

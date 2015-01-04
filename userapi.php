@@ -32,6 +32,13 @@ require_once 'bcutil.php';
 //               (OT_client_app, 10001) 
 // need an access token - [(client, object/resource, validtime, nounce), signature]
 // 
+function trim_leadingslash($route) {
+    if ($route[0] == "/") {
+        return \substr($route, 1);
+    } else {
+        return $route;
+    }
+}
 
 function get_request_userid($instr, $userid) {
     if ($instr == "me") {
@@ -47,17 +54,15 @@ function get_request_userid($instr, $userid) {
 
 $ret['_status'] = 0;
 $ret['api'] = "userapi";
-$ret['userid'] = $userid;
+$ret['userid'] = 0;
 
 $rmethod = filter_input(INPUT_SERVER, 'REQUEST_METHOD', FILTER_SANITIZE_STRING);
+$route = trim_leadingslash(filter_input(INPUT_GET, "__route__", FILTER_DEFAULT));
+$elms = explode("/", $route);
+
+$ret['route'] = $route;
 $ret['method'] = $rmethod;
-if ($userid != 0) {
-    $route = $_GET["__route__"];
-    if ($route[0] == "/")
-        $route = substr($route, 1);
         
-    $elms = explode("/", $route);
-    
     $ret["id"] = $elms[0];
     if ($rmethod == "POST") {
         $expr = "";
@@ -85,33 +90,40 @@ if ($userid != 0) {
             $ret['_status'] = $result;
         }
     } elseif ($rmethod == "GET") {
-        
-        $requid = get_request_userid($elms[0], $userid);
-        if ($elms[1] == "profile" || $elms[1] == null) {
-            // check permission
-            if ($userid == $requid) {
-                $p = getUserProfile($userid);
-                if ($p != null) {
-                    $ret = array_merge($ret, $p);
-                    if ($ret['passwd'] != "empty") {
-                        $ret['passwd'] = "set"; 
-                    };
-                    $ret['_status'] = 'success';
-                    $ret['_errorcode'] = 0;
-                    $ret['_errormsg'] = "";
+        $astatus = Authenticate::validateAuthCookie();
+        if ($astatus) {
+            $userid = Authenticate::getUserId();
+            $ret['userid'] = $userid;
+            $requid = get_request_userid($elms[0], $userid);
+            if ($elms[1] == "profile" || $elms[1] == null) {
+                // check permission
+                if ($userid == $requid) {
+                    $p = getUserProfile($userid);
+                    if ($p != null) {
+                        $ret = array_merge($ret, $p);
+                        if ($ret['passwd'] != "empty") {
+                            $ret['passwd'] = "set"; 
+                        };
+                        $ret['_status'] = 'success';
+                        $ret['_errorcode'] = 0;
+                        $ret['_errormsg'] = "";
+                    } else {
+                        $ret['_status'] = 'failure';
+                    }
                 } else {
                     $ret['_status'] = 'failure';
+                    $ret['_errorcode'] = 20;
+                    $ret['_errormsg'] = 'Access denied';
                 }
-            } else {
-                $ret['_status'] = 'failure';
-                $ret['_errorcode'] = 20;
-                $ret['_errormsg'] = 'Access denied';
             }
+        } else {
+            $ret['_status'] = 'failure';
+            $ret['_errorcode'] = 18;
+            $ret['_errormsg'] = 'Not authenticated';
         }
     } elseif ($rmethod == "PUT") {
         
     }
-}
 
 echo json_encode($ret);
 
