@@ -631,6 +631,16 @@ class BibleLogMgr {
             $stmt->execute();              
         }
     }
+
+    public function newReadingPlanForUser($userid, $plantype) {
+        $result = $this->mysqli->query("SELECT MAX(instid) from biblerlog");
+        if ($result) {
+            $result->bind_result($max);
+	    while ($result->fetch()) {
+                 echo $max;
+	    }
+	} 
+    }
 }
 
 // function handling the REST /bible api 
