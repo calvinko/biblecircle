@@ -401,6 +401,7 @@ THE SOFTWARE.
                     bibleReader.planinstid = parseInt(retobj.curplanid);
                     bibleReader.loadcurrentchapter();
                     bibleReader.loadstatus();
+                    $("#right-column").hide();
                 } else {
                     $("#nav-login, #nav-signup").removeClass("hide");
                     bibleReader.loadcurrentchapter();
@@ -1073,24 +1074,22 @@ THE SOFTWARE.
             </div>
             </div>
             <div id="right-column" class="col-sm-6 col-xs-8 col-md-4 col-lg-4">
-                <div style="height: 350px; margin-bottom: 20px;">
-                <script charset="utf-8" type="text/javascript">
-                amzn_assoc_ad_type = "responsive_search_widget";
-                amzn_assoc_tracking_id = "bcircle-20";
-                amzn_assoc_link_id = "TGPFGFB4VG76HSKL";
-                amzn_assoc_marketplace = "amazon";
-                amzn_assoc_region = "US";
-                amzn_assoc_placement = "";
-                amzn_assoc_search_type = "search_widget";
-                amzn_assoc_width = "auto";
-                amzn_assoc_height = "auto";
-                amzn_assoc_default_search_category = "";
-                amzn_assoc_default_search_key = "bible study";
-                amzn_assoc_theme = "light";
-                amzn_assoc_bg_color = "FFFFFF";
-                </script>
-                <script src="//z-na.amazon-adsystem.com/widgets/q?ServiceVersion=20070822&Operation=GetScript&ID=OneJS&WS=1&MarketPlace=US"></script>
-                </div>    
+                <div class="alignleft">
+                    <script type="text/javascript">
+       	                amzn_assoc_ad_type = "banner";
+	                    amzn_assoc_marketplace = "amazon";
+	                    amzn_assoc_region = "US";
+	                    amzn_assoc_placement = "assoc_banner_placement_default";
+	                    amzn_assoc_campaigns = "amazonhomepage";
+	                    amzn_assoc_banner_type = "rotating";
+	                    amzn_assoc_p = "29";
+	                    amzn_assoc_width = "120";
+	                    amzn_assoc_height = "600";
+	                    amzn_assoc_tracking_id = "bcircle00-20";
+	                    amzn_assoc_linkid = "22950ecd58cfc1eebe29b1054f0f5cd8";
+                    </script>
+                    <script src="//z-na.amazon-adsystem.com/widgets/q?ServiceVersion=20070822&Operation=GetScript&ID=OneJS&WS=1"></script>
+                </div>
                 <div class="panel">
                     <div style="display: none;" class="panel-heading">
                         <a href="#" style="font-size: 75%" class="pull-right">View all <b class="caret"></b></a>
