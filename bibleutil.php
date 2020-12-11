@@ -310,16 +310,22 @@ $bkbasetbl = array(
 
 function getTextESV($passage="John+1")
 {
+    $apikey = "ff03ea18d20b1479997d53d2841a09661982fee6";
     $passage = urlencode($passage);
-    $baseurl = "http://www.esvapi.org/v2/rest/passageQuery?key=IP&passage=$passage";
-    $options = "&include-footnotes=false&include-audio-link=false";
+    $baseurl = "https://api.esv.org/v3/passage/html/";
+    $headers = [ 'Authorization: Token ff03ea18d20b1479997d53d2841a09661982fee6' ];
+
+    $options = "?q=$passage";
     $ch = curl_init();
     $url = $baseurl . $options;
     curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_HTTPGET, true);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     $response = curl_exec($ch);
     curl_close($ch);
-    return $response;
+		$jobj = json_decode($response);
+    return $jobj->passages[0];
 }
 
 // New English Translation
@@ -632,13 +638,23 @@ class BibleLogMgr {
         }
     }
 
+    public function setReadingPlanForUser($userid, $instid) {
+        if (!($stmt = $this->mysqli->prepare("UPDATE bibleuserdata set curplanid=? WHERE userid=?"))) {
+            $this->errmsg = "Prepare failed: (" . $this->mysqli->errno . ") " . $this->mysqli->error;
+            echo $this->errmsg;
+            return 0;
+        }
+        $stmt->bind_param("ii", $instid, $userid);
+        $stmt->execute();
+    }
+
     public function newReadingPlanForUser($userid, $plantype) {
         $result = $this->mysqli->query("SELECT MAX(instid) from biblerlog");
         if ($result) {
-            $result->bind_result($max);
-	    while ($result->fetch()) {
-                 echo $max;
-	    }
+	    $row = $result->fetch_array(MYSQLI_NUM);
+            $newid = $row[0] + 1;
+            $this->newReadingPlan($newid);
+            $this->setReadingPlanForUser($userid, $newid);
 	} 
     }
 }
