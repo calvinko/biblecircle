@@ -395,9 +395,10 @@ THE SOFTWARE.
         function initLoginUser() {
             $.getJSON("/user/me", {}, function(retobj) {
                 userid = retobj.userid;
-                if (userid !== 0) {
+                if (userid !== 0 && userid != null) {
                     $("#nav-setting, #nav-user").removeClass("hide");
                     $("#nav-user span.user").text(retobj.firstname + ' ' + retobj.lastname);
+										$("#right-column").hide();
                     bibleReader.planinstid = parseInt(retobj.curplanid);
                     bibleReader.loadcurrentchapter();
                     bibleReader.loadstatus();
@@ -419,7 +420,7 @@ THE SOFTWARE.
             scope: "WholeBible",
             book: 1,
             chapter: 1,
-            startdate: "2014-01-01",
+            startdate: "2019-01-01",
             planinstid: 1,
             statustable: new Array(66),
             totalchapter: 1000,
@@ -560,8 +561,8 @@ THE SOFTWARE.
                 $("#singleviewpane").addClass("col-lg-12");
                 $("#mainviewpanel").removeClass("col-md-12");
                 $("#mainviewpanel").removeClass("col-lg-12");
-                $("#mainviewpanel").addClass("col-md-8");
-                $("#mainviewpanel").addClass("col-lg-8");
+                $("#mainviewpanel").addClass("col-md-9");
+                $("#mainviewpanel").addClass("col-lg-9");
                 $("#viewpane2").hide();
                 $("#right-column").show();
                 
@@ -571,8 +572,8 @@ THE SOFTWARE.
                 $("#singleviewpane").removeClass("col-lg-12");
                 $("#singleviewpane").addClass("col-md-6");
                 $("#singleviewpane").addClass("col-lg-6");
-                $("#mainviewpanel").removeClass("col-md-8");
-                $("#mainviewpanel").removeClass("col-lg-8");
+                $("#mainviewpanel").removeClass("col-md-9");
+                $("#mainviewpanel").removeClass("col-lg-9");
                 $("#mainviewpanel").addClass("col-md-12");
                 $("#mainviewpanel").addClass("col-lg-12");
                 
@@ -657,7 +658,7 @@ THE SOFTWARE.
             incfontsize: function() {
                 var fontSize = $("#singleviewpane .textbox").css('font-size').split('px')[0];
                 var fontInt = parseInt(fontSize) + 1;
-                if (fontInt < 30) {
+                if (fontInt <= 40) {
                     var lineHeight = fontInt + 4;
                     fontSize = fontInt + 'px';
                     $("#singleviewpane .textbox, #viewpane2 .textbox").css('font-size', fontSize);
@@ -752,7 +753,7 @@ THE SOFTWARE.
                                 var ch = parseInt($(this).text());
                                 bibleReader.switchchapter(bookid, ch);
                                 $("#bibleindex-dropdown div.biblemenuheader").hide();
-                                $("#bibleindex-dropdown").dropdown('toggle')
+                                $("#bibleindex-dropdown").dropdown('hide')
                                 $("#singleviewpane .text-container").show();
                                 $("#singleviewpane .statuspanel").hide();
                                 e.stopPropagation();
@@ -942,8 +943,8 @@ THE SOFTWARE.
     
     <div class="container">  
         <div style="padding-top: 7px" class="row">
-            <div style="padding: 0px; border-color: #aaaaaa" id="mainviewpanel" class="col-sm-12 col-md-8 col-lg-8 panel">
-            <div style="font-size: 13px; line-height: 15px; float: left; padding: 0px;" id="singleviewpane" class="col-md-12 col-lg-12">
+            <div style="padding: 0px; border-color: #aaaaaa" id="mainviewpanel" class="col-xs-12 col-sm-12 col-md-9 col-lg-9 panel">
+            <div style="font-size: 13px; line-height: 15px; float: left; padding: 0px;" id="singleviewpane" class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                     <div style="border-right: 1px solid #ddd;" class="panel panel-default panel-bible">
                         <div style="padding: 5px 10px;" class="panel-heading">
                             <div class="biblepanelheader">
@@ -962,12 +963,28 @@ THE SOFTWARE.
                                         </li>
                                         
                                     </ul>
-                                    <button id ="btn-status" class="btn btn-default"><i class="fa fa-list"></i></button>
+                                    <button id ="btn-status" class="btn btn-default hidden-xs"><i class="fa fa-list"></i></button>
                                     <a id ="btn-twocolumn" class="btn btn-default"><i class="fa fa-columns"></i></a>
                                 </div>
                                 <div class="btn-group">
                                     <button id="btn-prevbook" class="btn btn-default"><i class="fa fa-angle-double-left"></i></button>
                                     <button id="btn-prevchapter" class="btn btn-default"><i class="fa fa-angle-left"></i></button>
+																		<a class="btn btn-default dropdown-toggle bookname visible-xs" data-toggle="dropdown"><i class="fa fa-book"></i></a>
+																		<div id="bibleindex-dropdown" style="left: -100px; min-height: 400px; height:auto; width:320px" class="dropdown-menu" role="menu">
+																		<div style="display: none" class="biblemenuheader">
+																		    <div style="padding: 5px 15px" class="row">
+																		       <div class="biblemenutitle col-md-8">Genesis</div>
+																		       <div class="col-md-1 pull-right">
+																		           <button id="btn-biblemenutitle" type="button" class="close">x</button>
+																	         </div>
+											                  </div>
+																	      <ul style="height: auto; overflow-y: auto;"  class='brow'>
+																	      </ul>
+																		</div>
+																		<div class="divider"></div>
+																		<div class="smbox"></div>
+																		</div>
+
                                     <button id="btn-nextchapter" class="btn btn-default"><i class="fa fa-angle-right"></i></button>
                                     <button id="btn-nextbook" class="btn btn-default"><i class="fa fa-angle-double-right"></i></button>
 
@@ -983,9 +1000,9 @@ THE SOFTWARE.
                                     </ul>
 
                                 </div>
-                                <div style="float: right;line-height:18px; font-size: 16px; padding-right:10px" class="btn-group bookname">
+                                <div style="line-height:18px; font-size: 16px; padding-right:10px" class="btn-group bookname pull-right">
                                     <a class="btn dropdown-toggle" data-toggle="dropdown"><span></span>&nbsp<b class="caret"></b></a>
-                                    <div id="bibleindex-dropdown" style="left: -360px; min-height: 400px; height:auto; width:570px" class="dropdown-menu" role="menu">
+                                    <div id="bibleindex-dropdown" style="left: -360px; min-height: 400px; height:auto; width:540px" class="dropdown-menu" role="menu">
                                         <div style="display: none" class="biblemenuheader">
                                             <div style="padding: 5px 15px" class="row">
                                                 <div class="biblemenutitle col-md-8">Genesis</div>
@@ -1012,7 +1029,8 @@ THE SOFTWARE.
                                 </div>
                             </div>
                             <div style="display:none" class="statuspanel">
-                                    <div style="padding-right: 12px" class="summary-row col-md-12">
+														    <div class="row">
+                                    <div style="padding-right: 12px" class="summary-row col-md-9">
                                         <table style="font-size: 90%;" class="table table-striped">
                                             <tr><th width="140px">Goal</th><td class="goaltd"><div class="plangoal pull-left">New Testament</div>
                                                     <div class="pull-right"><a style="display:none"><span class="glyphicon glyphicon-edit"></span></a></div></td></tr>
@@ -1032,6 +1050,9 @@ THE SOFTWARE.
                                         </table>
                                         
                                     </div>
+																	  <div class="col-md-3 alignleft">
+																		</div>
+															 </div>
                                     <div class="status">
                                         
                                     </div>
