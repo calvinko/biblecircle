@@ -753,9 +753,10 @@ THE SOFTWARE.
                                 var ch = parseInt($(this).text());
                                 bibleReader.switchchapter(bookid, ch);
                                 $("#bibleindex-dropdown div.biblemenuheader").hide();
-                                $("#bibleindex-dropdown").dropdown('hide')
+                                
                                 $("#singleviewpane .text-container").show();
                                 $("#singleviewpane .statuspanel").hide();
+                                $("#bibleindex-dropdown").dropdown('hide')
                                 e.stopPropagation();
                             });
                             $("#bibleindex-dropdown ul.brow").append(cli);
