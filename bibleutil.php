@@ -644,7 +644,8 @@ class BibleLogMgr {
             echo $this->errmsg;
             return 0;
         }
-        $stmt->bind_param("iis", $instid, $userid, "1year");
+        $t = "1year"
+        $stmt->bind_param("iis", $instid, $userid, $t);
         $stmt->execute();
         if (!($stmt = $this->mysqli->prepare("UPDATE bibleuserdata set curplanid=? WHERE userid=?"))) {
             $this->errmsg = "Prepare failed: (" . $this->mysqli->errno . ") " . $this->mysqli->error;
