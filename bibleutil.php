@@ -638,14 +638,24 @@ class BibleLogMgr {
         }
     }
 
+    public function setReadingPlanStartDate($instid, $startdate) {
+        if (!($stmt = $this->mysqli->prepare("UPDATE bibleplan set startdate=? WHERE planid=?"))) {
+            $this->errmsg = "Prepare failed: (" . $this->mysqli->errno . ") " . $this->mysqli->error;
+            echo $this->errmsg;
+            return 0;
+        }
+        $stmt->bind_param("si", $startdate, $instid);
+        $stmt->execute();
+    }
+
     public function setReadingPlanForUser($userid, $instid) {
         if (!($stmt = $this->mysqli->prepare("INSERT INTO bibleplan (userid, planid, type) VALUES(?, ?, ?)"))) {
             $this->errmsg = "Prepare failed: (" . $this->mysqli->errno . ") " . $this->mysqli->error;
             echo $this->errmsg;
             return 0;
         }
-        $t = "1year"
-        $stmt->bind_param("iis", $instid, $userid, $t);
+        $t = "1year";
+        $stmt->bind_param("iis", $userid, $instid, $t);
         $stmt->execute();
         if (!($stmt = $this->mysqli->prepare("UPDATE bibleuserdata set curplanid=? WHERE userid=?"))) {
             $this->errmsg = "Prepare failed: (" . $this->mysqli->errno . ") " . $this->mysqli->error;
