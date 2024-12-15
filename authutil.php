@@ -9,26 +9,24 @@ define( 'COOKIE_PATH', '/' );
 define( 'COOKIE_AUTH', 'auth_biblecircle' ); 
 
 function rand_string( $length ) {
-	$chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";	
 
+    $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 	$size = strlen( $chars );
 	for( $i = 0; $i < $length; $i++ ) {
 		$str .= $chars[ rand( 0, $size - 1 ) ];
 	}
-
 	return $str;
+    
 }
 
 function generateblowfishsalt() {
         $salt = '$2x$14$' . rand_string(22);
         return $salt;
-        
 }
 
 function generatemd5salt() {
         $salt = "\$1\$" . rand_string(9);
         return $salt;
-        
 }
     
 function checkpassword($password, $hashpw) {
@@ -45,33 +43,28 @@ function changepassword($userid, $password, $newpw, $hashpw) {
         }
 }
 
-function getactivationcode($email, $rstr) 
-{
+function getactivationcode($email, $rstr) {
     $last = substr($rstr, -9);
     $salt = "\$1\$" . $last;
     $r = crypt($email, $salt);
     return substr($r,12);
 }
 
-function getfullactivationcode($email, $rstr) 
-{
+function getfullactivationcode($email, $rstr) {
     $last = substr($rstr, -9);
     $salt = "\$1\$" . $last;
     $r = crypt($email, $salt);
     return $r;
 }
 
-function checkactivationcode($email, $rstr, $code)
-{
+function checkactivationcode($email, $rstr, $code) {
     $h = "\$1\$" . substr($rstr, -9, 8) . "\$" . $code;
-    
     return $h == crypt($email, $h);
 }
 
 // Use MD5 for password  
 function setpassword($userid, $password) {
     $hashedpassword = crypt($password, generatemd5salt());
-
     $mysqli = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
     $result = $mysqli->query("UPDATE usertbl SET passwd='$hashedpassword' WHERE userid = $userid");
     if ($result) {
@@ -82,14 +75,12 @@ function setpassword($userid, $password) {
 }
 
 function setBACookie( $id, $remember = false ) { 
-
         if ( $remember ) { 
             $expiration = time() + 604800; // num of secs - 7 days 
         } else { 
             $expiration = time() + 86400; // 24 hours 
         } 
         $cookie = generateCookie( $id, $expiration ); 
-        
         if (COOKIE_DOMAIN) {
             if ( !setcookie( COOKIE_AUTH, $cookie, $expiration, COOKIE_PATH, COOKIE_DOMAIN, false, true ) ) { 
                 throw new AuthException( "Could not set cookie." ); 
@@ -101,9 +92,9 @@ function generateCookie( $id, $expiration ) {
 
         $key = hash_hmac( 'md5', $id . $expiration, SECRET_KEY ); 
         $hash = hash_hmac( 'md5', $id . $expiration, $key ); 
-
         $cookie = $id . '|' . $expiration . '|' . $hash; 
-        return $cookie; 
+        return $cookie;
+
 } 
 
 class Authenticate { 
@@ -155,9 +146,7 @@ class Authenticate {
                 throw new AuthException( "Username and password not match.", 5); 
             }
         }
-        
         throw new Exception("Database Error", 3);
-
     } 
      
     private function setCookie( $id, $remember = false ) { 
@@ -171,7 +160,8 @@ class Authenticate {
         
         if ( !setcookie( COOKIE_AUTH, $cookie, $expiration, COOKIE_PATH, COOKIE_DOMAIN, true, true ) ) { 
             throw new AuthException( "Could not set cookie." ); 
-        } 
+        }
+
     } 
      
     private function generateCookie( $id, $expiration ) { 
@@ -196,13 +186,9 @@ class Authenticate {
         
         $key = hash_hmac( 'md5', $id . $expiration, SECRET_KEY ); 
         $hash = hash_hmac( 'md5', $id . $expiration, $key ); 
-        
-        ///echo "Hash is ", $hash;
-        //echo "-- hmac is ", $hmac;
 
         if ( $hmac != $hash ) 
             return false; 
-
         return true; 
     }     
 } 

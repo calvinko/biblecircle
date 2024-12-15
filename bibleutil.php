@@ -669,11 +669,11 @@ class BibleLogMgr {
     public function newReadingPlanForUser($userid, $plantype) {
         $result = $this->mysqli->query("SELECT MAX(instid) from biblerlog");
         if ($result) {
-	    $row = $result->fetch_array(MYSQLI_NUM);
+	        $row = $result->fetch_array(MYSQLI_NUM);
             $newid = $row[0] + 1;
             $this->newReadingPlan($newid);
             $this->setReadingPlanForUser($userid, $newid);
-	} 
+	    } 
     }
 }
 

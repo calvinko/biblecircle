@@ -39,8 +39,6 @@ if (filter_has_var(INPUT_GET, 'dpage')) {
  
  if ($dpage == "songmgmt") {
      $durl = "/BibleApp/songmgmt.php";
- } elseif ($dpage == "shoe") {
-     $durl = "shoedrive.php";
  }
 
 ?>
