@@ -72,6 +72,7 @@ if ($rmethod == 'GET') {
         if ($day == 'all') {
             $statusarray = $logmgr->getAllChapterStatus($instid);
             //echo "day status";
+            $ret['startdate'] = $logmgr->getStartDate($instid);
             $ret['_status'] = 'success';
             $ret['statustable'] = $statusarray;
             echo json_encode($ret);
