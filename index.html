@@ -641,7 +641,7 @@ THE SOFTWARE.
                 var instidstr = this.planinstid.toString();
                 $.getJSON("/api/plan/" + instidstr + "/all", {}, function (retobj) {
                     bibleReader.statustable = retobj.statustable;
-                    
+                    bibleReader.startdate = retobj.statustable.startdate;
                 });
             },
             decfontsize: function() {
@@ -851,7 +851,7 @@ THE SOFTWARE.
 
 <body class="bg-metallic-plate">
     <header>
-        <div style="" class="navbar navbar-fixed-top navbar-default">
+        <div style="font-weight: 1" class="navbar navbar-fixed-top navbar-default">
             <div class="container">
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
