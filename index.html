@@ -641,7 +641,7 @@ THE SOFTWARE.
                 var instidstr = this.planinstid.toString();
                 $.getJSON("/api/plan/" + instidstr + "/all", {}, function (retobj) {
                     bibleReader.statustable = retobj.statustable;
-                    bibleReader.startdate = retobj.statustable.startdate;
+                    bibleReader.startdate = retobj.startdate;
                 });
             },
             decfontsize: function() {
