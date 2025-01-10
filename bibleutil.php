@@ -592,7 +592,7 @@ class BibleLogMgr {
     }
     
     public function getStartDate($instid) {
-        $result = $this->mysqli->query("SELECT startdate from bibleplan WHERE instid=$instid");
+        $result = $this->mysqli->query("SELECT startdate from bibleplan WHERE planid=$instid");
         if ($result) {
             if ($row = $result->fetch_row()) {
                 return ($row[0]);
@@ -600,7 +600,7 @@ class BibleLogMgr {
         }
         return ("2024-01-01");           
     }
-    
+
     public function getAllChapterStatus($instid) {
         global $biblebookinfo;
         $result = $this->mysqli->query("SELECT blknum,data from biblerlog WHERE instid=$instid ORDER BY blknum ");
