@@ -65,6 +65,13 @@ $ret['method'] = $rmethod;
         
     $ret["id"] = $elms[0];
     if ($rmethod == "POST") {
+        $astatus = Authenticate::validateAuthCookie();
+        if ($astatus) {
+            if ($elms[1] == "plan") {
+                $userid = Authenticate::getUserId();
+                $ret['newid'] = createNewPlanForUser($userid, "bible1year");
+            }
+        }
         $expr = "";
         if (filter_has_var(INPUT_POST, "firstname")) {
             $firstname = filter_input(INPUT_POST, "firstname", FILTER_DEFAULT);
