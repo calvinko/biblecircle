@@ -102,7 +102,7 @@ $ret['method'] = $rmethod;
             $userid = Authenticate::getUserId();
             $ret['userid'] = $userid;
             $requid = get_request_userid($elms[0], $userid);
-            if ($elms[1] == "profile" || $elms[1] == null) {
+            if (!isset($elms[1]) || $elms[1] == "profile" || $elms[1] == null) {
                 // check permission
                 if ($userid == $requid) {
                     $p = getUserProfile($userid);
