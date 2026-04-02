@@ -494,12 +494,34 @@ class BibleLogMgr {
     }
     
     public function updateChapterStatus($instid, $booknum, $chnum, $status) {
-        if ($status == 0 || $status == "0") {
-            $this->unmarkChapterDone($instid, $booknum, $chnum);
+        if ($instid == MYPLANID) { 
+            # special case for my own plan, which is not stored in the same way as other plans.
+            $result = $this->nbcsqli->query("SELECT progress_json from app_user_state_storage WHERE id = 1");
+            if ($result) {
+                $row = $result->fetch_row();
+                $json = $row[0];
+                $data = json_decode($json, true);
+                $bookname = getBookName($booknum, "KJV");
+                $data[$bookname][$chnum-1] = $status == 0 || $status == "0" ? 0 : 1;
+                $newjson = json_encode($data);
+                if (!($stmt = $this->nbcsqli->prepare("UPDATE app_user_state_storage set progress_json=? WHERE id=1"))) {
+                    $this->errmsg = "Prepare failed: (" . $this->nbcsqli->errno . ") " . $this->nbcsqli->error;
+                    echo $this->errmsg;
+                    return 0;
+                }
+                $stmt->bind_param("s", $newjson);
+                return $stmt->execute();
+            } else {
+                return 0;
+            }
         } else {
-            $this->markChapterDone($instid, $booknum, $chnum);
+            if ($status == 0 || $status == "0") {
+                $this->unmarkChapterDone($instid, $booknum, $chnum);
+            } else {
+                $this->markChapterDone($instid, $booknum, $chnum);
+            }
+            return 0;
         }
-        return;
     }
     
     public function getChapterStatusReadingPlan($instid, $booknum, $chnum) {
@@ -529,6 +551,20 @@ class BibleLogMgr {
     }
     
     public function getChapterStatus($instid, $booknum, $chnum) {
+        if ($instid == MYPLANID) { 
+            # special case for my own plan, which is not stored in the same way as other plans.
+            $result = $this->nbcsqli->query("SELECT progress_json from app_user_state_storage WHERE id = 1");
+            if ($result) {
+                $row = $result->fetch_row();
+                $json = $row[0];
+                $data = json_decode($json, true);
+                $bookname = getBookName($booknum, "KJV");
+                return $data[$bookname][$chnum-1] ? 1 : 0;
+            } else {
+                return 0;
+            }
+        } 
+
         $loc = $this->convertToLoc($booknum, $chnum);
         $blk = $loc[0];
         $section = $loc[1] - 1;
