@@ -352,7 +352,7 @@ function getBookNumber($bookname) {
     return $bktbl[$bkname];
 }
 
-functionm getBookNumberByFullName($bookname) {
+function getBookNumberByFullName($bookname) {
     global $booktbl;
     return $booktbl[$bookname];
 }
@@ -615,7 +615,7 @@ class BibleLogMgr {
         global $booktbl;
         if ($instid == MYPLANID) { 
         # special case for my own plan, which is not stored in the same way as other plans.
-            $result = $this->nbcsqli->query("SELECT progress_json from app_user_profile_storage WHERE id = 1");
+            $result = $this->nbcsqli->query("SELECT progress_json from app_user_state_storage WHERE id = 1");
             if ($result) {
                 $row = $result->fetch_row();
                 $json = $row[0];
@@ -624,7 +624,7 @@ class BibleLogMgr {
                 foreach ($data as $key => $value) {
                     $bname = $key;
                     $bknum = getBookNumberByFullName($bname);
-                    $rdata[$bknum] = $value;
+                    $rdata[$bknum] = array_map('intval', $value);
                 };
                 
                 return $rdata;
