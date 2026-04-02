@@ -26,7 +26,7 @@
 
 require_once 'config.php';
 
-define("MYPLANID", 73)
+define("MYPLANID", 73);
 
 $chinesebooknametbl = array(
     '創 世 記',
