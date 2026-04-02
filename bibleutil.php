@@ -26,6 +26,8 @@
 
 require_once 'config.php';
 
+define("MYPLANID", 73)
+
 $chinesebooknametbl = array(
     '創 世 記',
     '出 埃 及 記 ',
@@ -438,10 +440,12 @@ function getChapterText($book, $chapter, $version) {
 class BibleLogMgr {
     
     public $mysqli;
+    public $nbcsqli;
     public $errmsg;
     
     public function __construct() {
         $this->mysqli = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+        $this->nbcsqli = new mysqli(DB_HOST, DB_USER_1, DB_PASSWORD_1, DB_NAME_1);
         return $this;
     }
     
@@ -603,6 +607,18 @@ class BibleLogMgr {
 
     public function getAllChapterStatus($instid) {
         global $biblebookinfo;
+        if ($instid == MYPLANID) { 
+        # special case for my own plan, which is not stored in the same way as other plans.
+            $result = $this->nbcqli->query("SELECT progress_json from app_user_profile_storage WHERE user_id = 1");
+            if ($result) {
+                $row = $result->fetch_row();
+                $json = $row[0];
+                $data = json_decode($json, true);
+                return $data;
+            } else {
+                throw new Exception("sql error");
+            }
+        }
         $result = $this->mysqli->query("SELECT blknum,data from biblerlog WHERE instid=$instid ORDER BY blknum ");
         if ($result) {
             while ($row = $result->fetch_row()) {
