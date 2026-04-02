@@ -352,6 +352,11 @@ function getBookNumber($bookname) {
     return $bktbl[$bkname];
 }
 
+functionm getBookNumberByFullName($bookname) {
+    global $booktbl;
+    return $booktbl[$bookname];
+}
+
 
 function getBookName($booknum, $version)
         
@@ -607,9 +612,10 @@ class BibleLogMgr {
 
     public function getAllChapterStatus($instid) {
         global $biblebookinfo;
+        global $booktbl;
         if ($instid == MYPLANID) { 
         # special case for my own plan, which is not stored in the same way as other plans.
-            $result = $this->nbcqli->query("SELECT progress_json from app_user_profile_storage WHERE user_id = 1");
+            $result = $this->nbcsqli->query("SELECT progress_json from app_user_profile_storage WHERE id = 1");
             if ($result) {
                 $row = $result->fetch_row();
                 $json = $row[0];
@@ -617,9 +623,9 @@ class BibleLogMgr {
                 $rdata = [];
                 foreach ($data as $key => $value) {
                     $bname = $key;
-                    $bknum = getBookNumber($bname);
-                    $rdata[$bknum] = $value
-                }
+                    $bknum = getBookNumberByFullName($bname);
+                    $rdata[$bknum] = $value;
+                };
                 
                 return $rdata;
             } else {
