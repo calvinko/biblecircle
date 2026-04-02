@@ -614,7 +614,14 @@ class BibleLogMgr {
                 $row = $result->fetch_row();
                 $json = $row[0];
                 $data = json_decode($json, true);
-                return $data;
+                $rdata = [];
+                foreach ($data as $key => $value) {
+                    $bname = $key;
+                    $bknum = getBookNumber($bname);
+                    $rdata[$bknum] = $value
+                }
+                
+                return $rdata;
             } else {
                 throw new Exception("sql error");
             }
