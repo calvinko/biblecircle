@@ -524,32 +524,6 @@ class BibleLogMgr {
         }
     }
     
-    public function getChapterStatusReadingPlan($instid, $booknum, $chnum) {
-        $sql = "SELECT status from bibleplanreadlog WHERE instid=$instid and day=$booknum and section=$chnum";
-        $result = $this->mysqli->query($sql);
-        echo "$booknum\n";
-        if ($result) {
-            $row = $result->fetch_row();
-            echo $row[0];
-            return $row[0];
-        } else {
-            return 0;
-        }
-    }
-    
-    public function getBookStatusReadingPlan($instid, $booknum) {
-        $sql = "SELECT section,status from bibleplanreadlog WHERE instid=$instid and day=$booknum ORDER BY section";
-        $result = $this->mysqli->query($sql);
-        if ($result) {
-            while ($row = $result->fetch_row()) {
-                $rows[] = $row;
-            }
-            return $rows;
-        } else {
-            return 0;
-        }
-    }
-    
     public function getChapterStatus($instid, $booknum, $chnum) {
         if ($instid == MYPLANID) { 
             # special case for my own plan, which is not stored in the same way as other plans.
@@ -770,15 +744,4 @@ function bibleapi($elm, $vars, $ret)  {
 
 
 #$logmgr = new BibleLogMgr();
-/*
-for ($i = 0; $i<66; $i++) {
-    $nchp = $biblebookinfo[$i][1];
-    for ($j = 1; $j <= $nchp; $j++) {
-        $status = $logmgr->getChapterStatusReadingPlan(65, $i+1, $j);
-        $logmgr->updateChapterStatus(7, $i+1, $j, $status);
-    }
-}
-echo "Done";
-*/
-
 #$logmgr->newReadingPlan(10);
