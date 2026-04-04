@@ -34,6 +34,16 @@
 require_once 'config.php';
 require_once 'bibleutil.php';
 
+$allowedOrigins = array(
+    'http://localhost:5173',
+    'http://biblecircle.vercel.app',
+);
+
+if (isset($_SERVER['HTTP_ORIGIN']) && in_array($_SERVER['HTTP_ORIGIN'], $allowedOrigins, true)) {
+    header('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN']);
+    header('Vary: Origin');
+}
+
 $mysqli = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
 $mysqli->query("SET NAMES 'utf8'");
 
